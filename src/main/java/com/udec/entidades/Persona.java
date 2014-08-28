@@ -38,7 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Persona.findByNombre", query = "SELECT p FROM Persona p WHERE p.nombre = :nombre"),
     @NamedQuery(name = "Persona.findByVinculacion", query = "SELECT p FROM Persona p WHERE p.vinculacion = :vinculacion"),
     @NamedQuery(name = "Persona.findByTiempo", query = "SELECT p FROM Persona p WHERE p.tiempo = :tiempo"),
-    @NamedQuery(name = "Persona.findBySemestre", query = "SELECT p FROM Persona p WHERE p.semestre = :semestre")})
+    @NamedQuery(name = "Persona.findBySemestre", query = "SELECT p FROM Persona p WHERE p.semestre = :semestre"),
+    @NamedQuery(name = "Persona.findByCodigo", query = "SELECT p FROM Persona p WHERE p.codigo = :codigo")})
 public class Persona implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,6 +58,9 @@ public class Persona implements Serializable {
     private String tiempo;
     @Column(name = "semestre")
     private Integer semestre;
+    @Size(max = 45)
+    @Column(name = "codigo")
+    private String codigo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personaIdpersona")
     private List<Resultados> resultadosList;
     @JoinColumn(name = "programa_idprograma", referencedColumnName = "idprograma")
@@ -108,6 +112,14 @@ public class Persona implements Serializable {
 
     public void setSemestre(Integer semestre) {
         this.semestre = semestre;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     @XmlTransient

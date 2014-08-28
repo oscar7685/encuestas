@@ -4,6 +4,12 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>
+
+            Cátedra Unesco para la Lectura y la Escritura
+
+        </title>
+
         <!-- Bootstrap core CSS -->
         <link href="dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -126,8 +132,11 @@
                                     <option value="8">8</option>
                                     <option value="9">9</option>
                                     <option value="10">10</option>
-
                                 </select>
+                            </div>
+                            <label for="codigo" class="col-sm-2 control-label">Código estudiantil</label>
+                            <div class="col-sm-5">
+                                <input type="text" name="codigo" class="form-control input-sm required" id="codigo"  placeholder="Codigo estudiantil"/>
                             </div>
                         </div>
                     </c:when>

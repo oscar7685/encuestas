@@ -45,15 +45,15 @@ public class Resultados implements Serializable {
     private String valor;
     @Column(name = "orden")
     private Integer orden;
-    @JoinColumn(name = "persona_idpersona", referencedColumnName = "idpersona")
-    @ManyToOne(optional = false)
-    private Persona personaIdpersona;
     @JoinColumn(name = "respuesta_idrespuesta", referencedColumnName = "idrespuesta")
     @ManyToOne
     private Respuesta respuestaIdrespuesta;
     @JoinColumn(name = "pregunta_idpregunta", referencedColumnName = "idpregunta")
     @ManyToOne(optional = false)
     private Pregunta preguntaIdpregunta;
+    @JoinColumn(name = "persona_idpersona", referencedColumnName = "idpersona")
+    @ManyToOne(optional = false)
+    private Persona personaIdpersona;
 
     public Resultados() {
     }
@@ -86,14 +86,6 @@ public class Resultados implements Serializable {
         this.orden = orden;
     }
 
-    public Persona getPersonaIdpersona() {
-        return personaIdpersona;
-    }
-
-    public void setPersonaIdpersona(Persona personaIdpersona) {
-        this.personaIdpersona = personaIdpersona;
-    }
-
     public Respuesta getRespuestaIdrespuesta() {
         return respuestaIdrespuesta;
     }
@@ -108,6 +100,14 @@ public class Resultados implements Serializable {
 
     public void setPreguntaIdpregunta(Pregunta preguntaIdpregunta) {
         this.preguntaIdpregunta = preguntaIdpregunta;
+    }
+
+    public Persona getPersonaIdpersona() {
+        return personaIdpersona;
+    }
+
+    public void setPersonaIdpersona(Persona personaIdpersona) {
+        this.personaIdpersona = personaIdpersona;
     }
 
     @Override

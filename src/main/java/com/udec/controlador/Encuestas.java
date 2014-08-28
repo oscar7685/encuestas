@@ -100,7 +100,9 @@ public class Encuestas extends HttpServlet {
                 } else {
                     if (encuesta.getIdencuesta() == 2) {//estudiantes
                         String semestre = (String) request.getParameter("semestre");
+                        String codigo = (String) request.getParameter("codigo");
                         p.setSemestre(Integer.parseInt(semestre));
+                        p.setCodigo(codigo);
                     }
                 }
                 personaFacade.create(p);
