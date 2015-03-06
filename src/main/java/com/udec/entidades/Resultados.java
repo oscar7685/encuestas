@@ -40,7 +40,7 @@ public class Resultados implements Serializable {
     @Basic(optional = false)
     @Column(name = "idresultados")
     private Integer idresultados;
-    @Size(max = 45)
+    @Size(max = 2000)
     @Column(name = "valor")
     private String valor;
     @Column(name = "orden")

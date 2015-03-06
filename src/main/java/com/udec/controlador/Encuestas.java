@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -52,10 +53,12 @@ public class Encuestas extends HttpServlet {
     private FacultadFacade facultadFacade;
     @EJB
     private EncuestaFacade encuestaFacade;
+    private final static Logger LOGGER = Logger.getLogger(Encuestas.class);
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -108,16 +111,7 @@ public class Encuestas extends HttpServlet {
                 personaFacade.create(p);
                 Persona recienCreado = personaFacade.findByUltimo();
                 for (Pregunta pregunta : preguntas) {
-
-                    if (pregunta.getTipo().equals("2") || pregunta.getTipo().equals("3") || pregunta.getTipo().equals("4")) {
-                        Resultados re = new Resultados();
-                        re.setPersonaIdpersona(recienCreado);
-                        re.setPreguntaIdpregunta(pregunta);
-                        String respuesta1 = (String) request.getParameter("respuesta" + pregunta.getIdpregunta());
-                        re.setValor(respuesta1);
-                        resultadosFacade.create(re);
-
-                    } else if (pregunta.getTipo().equals("0")) {//seleccion multiple unica respuesta
+                    if (pregunta.getTipo().equals("0")) {//seleccion multiple unica respuesta
                         Resultados re = new Resultados();
                         re.setPersonaIdpersona(recienCreado);
                         re.setPreguntaIdpregunta(pregunta);
@@ -128,13 +122,73 @@ public class Encuestas extends HttpServlet {
                         } catch (Exception e) {
                             if (respuesta1 != null && respuesta1.equals("otro")) {
                                 String respuesta2 = (String) request.getParameter("preguntaOtro" + pregunta.getIdpregunta());
-                                re.setValor(respuesta2);
+                                if (respuesta2 == null || respuesta2.equals("")) {
+                                    re.setValor("ESCOGIERON LA OPCION OTRO Y NO ESCRIBIERON NADA");
+                                } else {
+                                    re.setValor(respuesta2);
+                                }
+
                             }
                             if (respuesta1 == null) {
-                                continue;
+                                re.setValor("NO RESPONDIO");
                             }
 
+                        } finally {
+                            resultadosFacade.create(re);
                         }
+
+                    } else if (pregunta.getTipo().equals("1")) {//Seleccion multiple con ordenamiento
+                        String respuestasEscogidas[] = request.getParameterValues("pregunta" + pregunta.getIdpregunta() + "[]");
+                        if (respuestasEscogidas != null) {
+                            for (int j = 0; j < respuestasEscogidas.length; j++) {
+                                Resultados re = new Resultados();
+                                re.setPersonaIdpersona(recienCreado);
+                                re.setPreguntaIdpregunta(pregunta);
+
+                                try {
+                                    int idRespuesta = Integer.parseInt(respuestasEscogidas[j]);
+                                    Respuesta respuesta = respuestaFacade.find(idRespuesta);
+                                    re.setRespuestaIdrespuesta(respuesta);
+                                    String aux = (String) request.getParameter("ordenR" + respuesta.getIdrespuesta());
+                                    try {
+                                        re.setOrden(Integer.parseInt(aux));
+                                    } catch (Exception ex) {
+                                        re.setValor("ESCOGIERON LA OPCION PERO NO LE PUSIERON ORDEN");
+                                    }
+
+                                } catch (Exception e) {
+                                    if (respuestasEscogidas[j] != null && respuestasEscogidas[j].equals("otro")) {
+                                        String respuesta2 = (String) request.getParameter("preguntaOtro" + pregunta.getIdpregunta());
+                                        re.setValor(respuesta2);
+
+                                        try {
+                                            String aux = (String) request.getParameter("ordenRP" + pregunta.getIdpregunta());
+                                            int orden = Integer.parseInt(aux);
+                                            re.setOrden(orden);
+                                        } catch (Exception ex) {
+                                            LOGGER.warn("NO LE COLOCARON EL ORDEN A UNA RESPUESTA DE ORDENAMIENTO Y SELECCION MULTIPLE: ");
+                                        }
+
+                                    }
+                                } finally {
+                                    resultadosFacade.create(re);
+                                }
+
+                            }
+                        }
+
+                    } else if (pregunta.getTipo().equals("2") || pregunta.getTipo().equals("3")
+                            || pregunta.getTipo().equals("4")) { //Respuesta Abierta
+                        Resultados re = new Resultados();
+                        re.setPersonaIdpersona(recienCreado);
+                        re.setPreguntaIdpregunta(pregunta);
+                        String respuesta1 = (String) request.getParameter("respuesta" + pregunta.getIdpregunta());
+                        if (respuesta1 == null || respuesta1.equals("")) {
+                            re.setValor("NO RESPONDIO");
+                        } else {
+                            re.setValor(respuesta1);
+                        }
+
                         resultadosFacade.create(re);
 
                     } else if (pregunta.getTipo().equals("6")) {//multiple respuesta sin ordenamiento
@@ -157,39 +211,32 @@ public class Encuestas extends HttpServlet {
                             re.setPersonaIdpersona(recienCreado);
                             re.setPreguntaIdpregunta(pregunta);
                             re.setRespuestaIdrespuesta(respuesta);
-                            String aux = (String) request.getParameter("ordenamiR" + respuesta.getIdrespuesta());
-                            re.setOrden(Integer.parseInt(aux));
-                            resultadosFacade.create(re);
-
-                        }
-                    } else if (pregunta.getTipo().equals("1")) {//Seleccion multiple con ordenamiento
-                        String respuestasEscogidas[] = request.getParameterValues("pregunta" + pregunta.getIdpregunta() + "[]");
-                        for (int j = 0; j < respuestasEscogidas.length; j++) {
-                            Resultados re = new Resultados();
-                            re.setPersonaIdpersona(recienCreado);
-                            re.setPreguntaIdpregunta(pregunta);
-
                             try {
-                                int idRespuesta = Integer.parseInt(respuestasEscogidas[j]);
-                                Respuesta respuesta = respuestaFacade.find(idRespuesta);
-                                re.setRespuestaIdrespuesta(respuesta);
-                                String aux = (String) request.getParameter("ordenR" + respuesta.getIdrespuesta());
-                                re.setOrden(Integer.parseInt(aux));
+                                String aux = (String) request.getParameter("ordenamiR" + respuesta.getIdrespuesta());
+                                int orden = Integer.parseInt(aux);
+                                re.setOrden(orden);
                             } catch (Exception e) {
-                                if (respuestasEscogidas[j] != null && respuestasEscogidas[j].equals("otro")) {
-                                    String respuesta2 = (String) request.getParameter("preguntaOtro" + pregunta.getIdpregunta());
-                                    re.setValor(respuesta2);
-                                    String aux = (String) request.getParameter("ordenRP" + pregunta.getIdpregunta());
-                                    re.setOrden(Integer.parseInt(aux));
-                                }
-                                if (respuestasEscogidas[j] == null) {
-                                continue;
+                                re.setValor("NO LE COLOCARON EL ORDEN A UNA RESPUESTA DE SOLO ORDENAMIENTO");
+                            } finally {
+                                resultadosFacade.create(re);
+                            }
+                        }
+                    } else if (pregunta.getTipo().equals("9")) {
+                        Resultados re = new Resultados();
+                        re.setPersonaIdpersona(recienCreado);
+                        re.setPreguntaIdpregunta(pregunta);
+                        String respuesta1 = (String) request.getParameter("pregunta" + pregunta.getIdpregunta());
+                        try {
+                            int idRespuesta = Integer.parseInt(respuesta1);
+                            re.setRespuestaIdrespuesta(respuestaFacade.find(idRespuesta));
+                        } catch (Exception e) {
+                            if (respuesta1 == null) {
+                                re.setValor("NO RESPONDIO");
                             }
 
-                            }
+                        } finally {
                             resultadosFacade.create(re);
                         }
-
                     }
 
                 }
@@ -270,51 +317,74 @@ public class Encuestas extends HttpServlet {
                                 }
                                 out.write("{\"programas\":[" + aux + "]}");
 
-                            } else {
-                                if (accion.equals("listaE")) {
-                                    sesion.setAttribute("listaE", encuestaFacade.findAll());
-                                    String url = "encuestas/listar.jsp";
-                                    RequestDispatcher rd = request.getRequestDispatcher(url);
-                                    rd.forward(request, response);
-                                } else {
-                                    if (accion.equals("ordenarP")) {
-                                        String encu = (String) request.getParameter("encuesta");
-                                        Encuesta e = encuestaFacade.find(Integer.parseInt(encu));
-                                        sesion.setAttribute("encuesta", e);
-                                        sesion.setAttribute("preguntas", encuestaFacade.preguntasOrdenadasXorden(e));
-                                        String url = "encuestas/ordenarP.jsp";
-                                        RequestDispatcher rd = request.getRequestDispatcher(url);
-                                        rd.forward(request, response);
-                                    } else {
-                                        if (accion.equals("ordenarPreguntas")) {
-                                            String orden = request.getParameter("order");
-                                            String separados[] = orden.split(",");
-                                            for (int i = 0; i < separados.length; i++) {
-                                                Pregunta aux = preguntaFacade.find(Integer.parseInt(separados[i]));
-                                                aux.setOrden(i + 1);
-                                                preguntaFacade.edit(aux);
-                                            }
-                                        } else {
-                                            if (accion.equals("Condicionar")) {
-                                                String encu = (String) request.getParameter("encuesta");
-                                                Encuesta e = encuestaFacade.find(Integer.parseInt(encu));
-                                                sesion.setAttribute("encuesta", e);
-                                                sesion.setAttribute("preguntas", encuestaFacade.preguntasOrdenadasXorden(e));
-                                                String url = "encuestas/condicionarP.jsp";
-                                                RequestDispatcher rd = request.getRequestDispatcher(url);
-                                                rd.forward(request, response);
-                                            }
-
-                                        }
-
-                                    }
-
+                            } else if (accion.equals("listaE")) {
+                                sesion.setAttribute("listaE", encuestaFacade.findAll());
+                                String url = "encuestas/listar.jsp";
+                                RequestDispatcher rd = request.getRequestDispatcher(url);
+                                rd.forward(request, response);
+                            } else if (accion.equals("ordenarP")) {
+                                String encu = (String) request.getParameter("encuesta");
+                                Encuesta e = encuestaFacade.find(Integer.parseInt(encu));
+                                sesion.setAttribute("encuesta", e);
+                                sesion.setAttribute("preguntas", encuestaFacade.preguntasOrdenadasXorden(e));
+                                String url = "encuestas/ordenarP.jsp";
+                                RequestDispatcher rd = request.getRequestDispatcher(url);
+                                rd.forward(request, response);
+                            } else if (accion.equals("ordenarPreguntas")) {
+                                String orden = request.getParameter("order");
+                                String separados[] = orden.split(",");
+                                for (int i = 0; i < separados.length; i++) {
+                                    Pregunta aux = preguntaFacade.find(Integer.parseInt(separados[i]));
+                                    aux.setOrden(i + 1);
+                                    preguntaFacade.edit(aux);
                                 }
+                            } else if (accion.equals("Condicionar")) {
+                                String encu = (String) request.getParameter("encuesta");
+                                Encuesta e = encuestaFacade.find(Integer.parseInt(encu));
+                                sesion.setAttribute("encuesta", e);
+                                sesion.setAttribute("preguntas", encuestaFacade.preguntasOrdenadasXorden(e));
+                                String url = "encuestas/condicionarP.jsp";
+                                RequestDispatcher rd = request.getRequestDispatcher(url);
+                                rd.forward(request, response);
+                            } else if (accion.equals("listaPersonas")) {
+                                sesion.setAttribute("listaPersonas", personaFacade.findAll());
+                                String url = "personas/listar.jsp";
+                                RequestDispatcher rd = request.getRequestDispatcher(url);
+                                rd.forward(request, response);
+                            } else if (accion.equals("verRespuestas")) {
+                                sesion.setAttribute("listaPersonas", personaFacade.findAll());
+                                String persona = request.getParameter("persona");
+                                Persona p = personaFacade.find(Integer.parseInt(persona));
+                                Encuesta enc = null;
+                                if (p.getSemestre() != null) {
+                                    enc = encuestaFacade.find(2);
+                                } else if (p.getVinculacion() != null) {
+                                    enc = encuestaFacade.find(1);
+                                }
+                                
+                                List<Pregunta> preguntasOrdenadas = encuestaFacade.preguntasOrdenadasXorden(enc);
+                                sesion.setAttribute("encuesta", enc);
+                                sesion.setAttribute("preguntas", preguntasOrdenadas);
+                                List<List<Resultados>>  resultadosxpregunta = new ArrayList<List<Resultados>>();
+                                for (Pregunta pregunta : preguntasOrdenadas) {
+                                List<Resultados> resultados = resultadosFacade.findByList2("personaIdpersona", p, "preguntaIdpregunta", pregunta);    
+                                resultadosxpregunta.add(resultados);
+                                }
+                                
+                                sesion.setAttribute("resultadosxpregunta", resultadosxpregunta);
+                                
+                                sesion.setAttribute("personaje", p);
+                                String url = "personas/verResultados.jsp";
+                                RequestDispatcher rd = request.getRequestDispatcher(url);
+                                rd.forward(request, response);
+                                
                             }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            LOGGER.error("Se ha presentado un error: ", e);
         } finally {
             out.close();
         }
@@ -322,7 +392,8 @@ public class Encuestas extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -336,7 +407,8 @@ public class Encuestas extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -358,5 +430,4 @@ public class Encuestas extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

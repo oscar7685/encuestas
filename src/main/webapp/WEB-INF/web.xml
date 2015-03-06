@@ -4,9 +4,17 @@
         <servlet-name>Encuestas</servlet-name>
         <servlet-class>com.udec.controlador.Encuestas</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DescargarLog</servlet-name>
+        <servlet-class>com.udec.controlador.DescargarLog</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Encuestas</servlet-name>
         <url-pattern>/Encuestas</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DescargarLog</servlet-name>
+        <url-pattern>/DescargarLog</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

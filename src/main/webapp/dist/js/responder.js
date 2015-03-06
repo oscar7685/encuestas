@@ -1,26 +1,18 @@
 $(function() {
-    jQuery.extend(jQuery.validator.messages, {
-        required: "Este campo es requerido."
-    });
-    $("#form_encuesta").validate({
-        debug: true,
-        submitHandler: function() {
-            this.timer = setTimeout(function() {
-                $.ajax({
-                    url: '/encuestas/Encuestas?accion=guardarEncuesta',
-                    data: $("#form_encuesta").serialize(),
-                    type: 'post',
-                    success: function() {
+    $("#botonEnviar").click(function() {
+        $.ajax({
+            url: '/encuestas/Encuestas?accion=guardarEncuesta',
+            data: $("#form_encuesta").serialize(),
+            type: 'post',
+            success: function() {
 
-                        $("#myModalGracias").modal();
-                        $('#myModalGracias').on('hide.bs.modal', function() {
-                            location = "/encuestas/";
-                        });
-                    }
-
+                $("#myModalGracias").modal();
+                $('#myModalGracias').on('hide.bs.modal', function() {
+                    location = "/encuestas/";
                 });
-            }, 400);
-        }
+            }
+
+        });
     });
     $("#facultad").change(function() {
         $.ajax({

@@ -31,7 +31,7 @@
                     submitHandler: function() {
                         $.ajax({
                             type: 'POST',
-                            url: "/encuestas/Encuestas?accion=crearPregunta2",
+                            url: "/encuestas2/Encuestas?accion=crearPregunta2",
                             data: $("#formCrearPregunta").serialize(),
                             success: function() {
                                 location = "preguntas/listar.jsp";

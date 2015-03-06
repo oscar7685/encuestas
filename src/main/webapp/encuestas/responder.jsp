@@ -486,7 +486,7 @@
                                                                     </c:forEach>   
 
                                                                     <div class="row">   
-                                                                        <button class="btn btn-primary" data-content="Env&iacute;a la encuesta evaluada. Verifique que todas las preguntas han sido respondidas correctamente. Esta operación no se podrá deshacer."  value="1" data-original-title="Enviar encuesta" type="submit">Enviar</button>
+                                                                        <button id="botonEnviar" class="btn btn-primary" data-content="Env&iacute;a la encuesta evaluada. Verifique que todas las preguntas han sido respondidas correctamente. Esta operación no se podrá deshacer."  value="1" data-original-title="Enviar encuesta" type="button">Enviar</button>
                                                                     </div>
 
                                                                     </form> 
