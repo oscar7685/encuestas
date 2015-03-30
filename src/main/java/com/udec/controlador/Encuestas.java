@@ -73,7 +73,39 @@ public class Encuestas extends HttpServlet {
         String accion = (String) request.getParameter("accion");
         try {
 
-            if (accion.equals("irEncuesta")) {
+            if (accion.equals("informeXpregunta")) {
+                int num = 2;
+                int totalr = 0;
+                List<Pregunta> preguntas = preguntaFacade.findByList2("tipo", "0", "encuestaIdencuesta.idencuesta", num);
+                List<String> totalrespuestas = new ArrayList<String>();
+                List<List<String>> cantidadXrespuestaXPregunta = new ArrayList<List<String>>();
+                //List<List<Resultados>> resultadosxpregunta = new ArrayList<List<Resultados>>();
+                for (Pregunta pregunta : preguntas) {
+                    totalr = 0;
+                    List<Respuesta> respuestas = pregunta.getRespuestaList();
+                    List<String> cantidadRespuestasPreguntaActual = new ArrayList<String>();
+                    for (Respuesta respuesta : respuestas) {
+                        List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                        cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                        totalr += resultados.size();
+                    }
+                    if ("true".equals(pregunta.getOtro())) {
+                        List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", null);
+                        cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                        totalr += resultados.size();
+                    }
+                    totalrespuestas.add(""+totalr);
+                    cantidadXrespuestaXPregunta.add(cantidadRespuestasPreguntaActual);
+
+                }
+                sesion.setAttribute("preguntas", preguntas);
+                sesion.setAttribute("totalrespuestas", totalrespuestas);
+                sesion.setAttribute("cantidadXrespuestaXPregunta", cantidadXrespuestaXPregunta);
+                String url = "informes/informexpregunta.jsp";
+                RequestDispatcher rd = request.getRequestDispatcher(url);
+                rd.forward(request, response);
+
+            } else if (accion.equals("irEncuesta")) {
                 String idencuesta = (String) request.getParameter("idencuesta");
                 sesion.setAttribute("listaF", facultadFacade.findAll());
                 sesion.setAttribute("listaP", programaFacade.findAll());
@@ -361,23 +393,23 @@ public class Encuestas extends HttpServlet {
                                 } else if (p.getVinculacion() != null) {
                                     enc = encuestaFacade.find(1);
                                 }
-                                
+
                                 List<Pregunta> preguntasOrdenadas = encuestaFacade.preguntasOrdenadasXorden(enc);
                                 sesion.setAttribute("encuesta", enc);
                                 sesion.setAttribute("preguntas", preguntasOrdenadas);
-                                List<List<Resultados>>  resultadosxpregunta = new ArrayList<List<Resultados>>();
+                                List<List<Resultados>> resultadosxpregunta = new ArrayList<List<Resultados>>();
                                 for (Pregunta pregunta : preguntasOrdenadas) {
-                                List<Resultados> resultados = resultadosFacade.findByList2("personaIdpersona", p, "preguntaIdpregunta", pregunta);    
-                                resultadosxpregunta.add(resultados);
+                                    List<Resultados> resultados = resultadosFacade.findByList2("personaIdpersona", p, "preguntaIdpregunta", pregunta);
+                                    resultadosxpregunta.add(resultados);
                                 }
-                                
+
                                 sesion.setAttribute("resultadosxpregunta", resultadosxpregunta);
-                                
+
                                 sesion.setAttribute("personaje", p);
                                 String url = "personas/verResultados.jsp";
                                 RequestDispatcher rd = request.getRequestDispatcher(url);
                                 rd.forward(request, response);
-                                
+
                             }
                         }
                     }
