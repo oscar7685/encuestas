@@ -76,7 +76,7 @@
                         <div class="form-group">
                             <label for="nombre" class="col-sm-1 control-label">Docente</label>
                             <div class="col-sm-11">
-                                <input type="text" class="form-control input-sm  required" id="nombre" placeholder="Nombre" name="nombre">
+                                <input type="text" class="form-control input-sm  required" id="nombre" placeholder="Nombre" name="nombre" value="${personaje.nombre}">
                             </div>
                         </div>
                         <div class="form-group">
@@ -104,7 +104,7 @@
                             </div>
                             <label for="codigo" class="col-sm-2 control-label">Código estudiantil</label>
                             <div class="col-sm-5">
-                                <input type="text" disabled class="form-control input-sm required" id="nombre"  value="${personaje.semestre}"/>
+                                <input type="text" disabled class="form-control input-sm required" id="nombre"  value="${personaje.codigo}"/>
                             </div>
                         </div>
                     </c:when>
@@ -114,413 +114,392 @@
                 </div>
 
                 <c:forEach items="${preguntas}" var="pregunta" varStatus="status">
+                    <%--${resultadosxpregunta.get(status.index).size()}--%>
                     <c:choose>
                         <%--Pregunta seleccion multiple multiple respuesta SIN ordenamiento--%>
                         <c:when test="${pregunta.getTipo() == '6'}">
                             <c:choose>
                                 <c:when test="${fn:length(pregunta.condicionList1)>0}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>${pregunta.pregunta}</label>
-                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta">
-                                        <div class="checkbox">
-                                            <label>
-                                                ${respuesta.respuesta}
-                                                <select name="respuesta${respuesta.idrespuesta}" class="required">
-                                                    <option></option>
-                                                    <option value="Si">Si</option>
-                                                    <option value="No">No</option>
-                                                </select> 
-                                            </label>
-                                        </div>
-                                    </c:forEach>
-                                    <c:choose>
-                                        <c:when test="${pregunta.otro=='true'}">
-                                            <div class="checkbox">
-                                                <label>
-                                                    ${pregunta.labelOtro}
-                                                </label>
-                                                <input type="text" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
-                                            </div>
-                                        </c:when>
+                                    <!--<div class="row hide" id="pregunta${pregunta.idpregunta}"> -->
+                                    <div class="row" id="pregunta${pregunta.idpregunta}"> 
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="row" id="pregunta${pregunta.idpregunta}">
+                                        </c:otherwise>        
                                     </c:choose>
-                                </div>
-                            </div>
-                            </div>     
-                        </c:when>
-                        <%--Pregunta seleccion multiple unica respuesta--%>            
-                        <c:when test="${pregunta.getTipo() == '0'}">
-                            <div class="row" id="pregunta${pregunta.idpregunta}">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>${pregunta.pregunta}</label>
-                                        <c:choose>
-                                            <c:when test="${resultadosxpregunta.get(status.index).size() > 0}" >
-                                                <c:forEach items="${pregunta.respuestaList}" var="respuesta">
-                                                    <c:set var ="encontrado" value="0"></c:set>
-                                                    <c:forEach items="${resultadosxpregunta.get(status.index)}" var="resultados">
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>${pregunta.pregunta}</label>
+                                            <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="st3">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        ${respuesta.respuesta}
+                                                        <select name="respuesta${respuesta.idrespuesta}" class="required">
+                                                            <option>${resultadosxpregunta.get(status.index).get(st3.index).valor}</option>
+                                                        </select> 
+                                                    </label>
+                                                </div>
+                                            </c:forEach>
+                                            <c:choose>
+                                                <c:when test="${pregunta.otro=='true'}">
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            ${pregunta.labelOtro}
+                                                        </label>
+                                                        <input type="text" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
+                                                    </div>
+                                                </c:when>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+                                </div>     
+                            </c:when>
+                            <%--Pregunta seleccion multiple unica respuesta--%>            
+                            <c:when test="${pregunta.getTipo() == '0'}">
+                                <div class="row" id="pregunta${pregunta.idpregunta}">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>${pregunta.pregunta}</label>
+                                            <c:choose>
+                                                <c:when test="${resultadosxpregunta.get(status.index).size() > 0}" >
+                                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="s0">
+                                                        <c:set var ="encontrado" value="0"></c:set>
+                                                        <c:forEach items="${resultadosxpregunta.get(status.index)}" var="resultados0" varStatus="res">
+                                                            <c:choose>
+                                                                <c:when test="${resultados0.respuestaIdrespuesta!=null && resultados0.respuestaIdrespuesta.idrespuesta == respuesta.idrespuesta}">
+                                                                    <div class="radio">
+                                                                        <label>
+                                                                            <input type="radio" value="${respuesta.idrespuesta}" checked>
+                                                                            ${respuesta.respuesta}
+                                                                        </label>
+                                                                        <c:set var ="encontrado" value="1"></c:set>
+                                                                        </div>
+                                                                </c:when>
+                                                            </c:choose> 
+                                                        </c:forEach>   
                                                         <c:choose>
-                                                            <c:when test="${resultados.respuestaIdrespuesta.idrespuesta == respuesta.idrespuesta}">
+                                                            <c:when test="${encontrado == 0}">
                                                                 <div class="radio">
                                                                     <label>
-                                                                        <input type="radio" value="${respuesta.idrespuesta}" checked  class="required">
+                                                                        <input type="radio" value="${respuesta.idrespuesta}">
                                                                         ${respuesta.respuesta}
                                                                     </label>
-                                                                    <c:set var ="encontrado" value="1"></c:set>
                                                                 </div>
                                                             </c:when>
                                                         </c:choose>
-
-                                                    </c:forEach>    
+                                                    </c:forEach>
                                                     <c:choose>
-                                                        <c:when test="${encontrado == 0}">
-                                                            <div class="radio">
-                                                                <label>
-                                                                    <input type="radio" value="${respuesta.idrespuesta}" class="required">
-                                                                    ${respuesta.respuesta}
-                                                                </label>
-                                                            </div>
-                                                        </c:when>
-                                                    </c:choose>
-                                                </c:forEach>
-                                                <c:choose>
-                                                    <c:when test="${pregunta.otro=='true'}">
-                                                        <c:set var="encontradoOtro" value="0" ></c:set>
-                                                        <c:forEach items="${resultadosxpregunta.get(status.index)}" var="resultados">
+                                                        <c:when test="${pregunta.otro=='true'}">
+                                                            <c:set var="encontradoOtro" value="0" ></c:set>
+                                                            <c:forEach items="${resultadosxpregunta.get(status.index)}" var="resultados">
+                                                                <c:choose>
+                                                                    <c:when test="${resultados.valor != null}">
+                                                                        <div class="radio">
+                                                                            <label class="otroRadio">
+                                                                                <input type="radio"  value="otro" checked>
+                                                                                ${pregunta.labelOtro}
+                                                                            </label>
+                                                                            <input type="text"  class="form-control" disabled="disabled" value ="${resultados.valor}"/>
+                                                                            <c:set var="encontradoOtro" value="1" ></c:set>
+                                                                            </div>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                            </c:forEach>
                                                             <c:choose>
-                                                                <c:when test="${resultados.valor != null}">
+                                                                <c:when test="${encontradoOtro==0}">
                                                                     <div class="radio">
                                                                         <label class="otroRadio">
-                                                                            <input type="radio"  value="otro" checked>
+                                                                            <input type="radio"  value="otro" >
                                                                             ${pregunta.labelOtro}
                                                                         </label>
-                                                                        <input type="text"  class="form-control" disabled="disabled" value ="${resultados.valor}"/>
-                                                                        <c:set var="encontradoOtro" value="1" ></c:set>
-                                                                    </div>
+                                                                        <input type="text"  class="form-control" disabled="disabled"/>
+                                                                    </div>                                                               
                                                                 </c:when>
                                                             </c:choose>
-                                                        </c:forEach>
-                                                        <c:choose>
-                                                            <c:when test="${encontradoOtro==0}">
-                                                                <div class="radio">
-                                                                    <label class="otroRadio">
-                                                                        <input type="radio"  value="otro" >
-                                                                        ${pregunta.labelOtro}
-                                                                    </label>
-                                                                    <input type="text"  class="form-control" disabled="disabled"/>
-                                                                </div>                                                               
-                                                            </c:when>
-                                                        </c:choose>
 
 
-                                                    </c:when>
-                                                </c:choose>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:forEach items="${pregunta.respuestaList}" var="respuesta">
-                                                    <div class="radio">
-                                                        <label>
-                                                            <c:choose>
-                                                                <c:when test="${resultados.respuestaIdrespuesta.idrespuesta == respuesta.idrespuesta}">
-                                                                    <input type="radio" value="${respuesta.idrespuesta}" checked  class="required">
-                                                                    ${respuesta.respuesta}
-                                                                </c:when>  
-                                                                <c:otherwise>
-                                                                    <input type="radio" value="${respuesta.idrespuesta}" class="required">
-                                                                    ${respuesta.respuesta}
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </label>
-                                                    </div>
-                                                </c:forEach>
-                                                <c:choose>
-                                                    <c:when test="${pregunta.otro=='true'}">
+                                                        </c:when>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta">
                                                         <div class="radio">
-                                                            <label class="otroRadio">
-                                                                <input type="radio"  value="otro" id="otro${pregunta.idpregunta}" name="pregunta${pregunta.idpregunta}">
-                                                                ${pregunta.labelOtro}
+                                                            <label>
+                                                                <c:choose>
+                                                                    <c:when test="${resultados.respuestaIdrespuesta.idrespuesta == respuesta.idrespuesta}">
+                                                                        <input type="radio" value="${respuesta.idrespuesta}" checked  class="required">
+                                                                        ${respuesta.respuesta}
+                                                                    </c:when>  
+                                                                    <c:otherwise>
+                                                                        <input type="radio" value="${respuesta.idrespuesta}" class="required">
+                                                                        ${respuesta.respuesta}
+                                                                    </c:otherwise>
+                                                                </c:choose>
                                                             </label>
-                                                            <input type="text" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
                                                         </div>
-
-                                                    </c:when>
-                                                </c:choose>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                </div> 
-                            </div>
-                        </c:when>
-
-                        <%--Pregunta SOLO ordenamiento--%>
-                        <c:when test="${pregunta.getTipo() == '7'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>${pregunta.pregunta}</label>
-                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta">
-                                        <div class="checkbox" style="padding-left: 0px;">
-                                            <label>
-                                                ${respuesta.respuesta}
-                                            </label>
-                                            <select name="ordenamiR${respuesta.idrespuesta}" id="ordenamiR${respuesta.idrespuesta}" class="required">
-                                                <option value=""></option>
-                                                <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="status">
-                                                    <option value="${status.index + 1}">${status.index + 1}</option>
-                                                </c:forEach>  
-                                            </select>
-                                        </div>
-                                    </c:forEach>
-                                </div>
-                            </div> 
-                            </div>
-                        </c:when>
-
-                        <%--Pregunta seleccion multiple multiple respuesta CON ordenamiento--%>            
-                        <c:when test="${pregunta.getTipo() == '1'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0 && pregunta.condicionList1[0].tipo=='MostrarSI'}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>${pregunta.pregunta}</label>
-                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta">
-                                        <div class="checkbox">
-                                            <label>
-                                                <c:choose>
-                                                    <c:when test="${fn:length(respuesta.condicionList)>0 && respuesta.condicionList[0].tipo=='OcultarSI'}">
-                                                        <input type="checkbox"  value="${respuesta.idrespuesta}" id="${respuesta.idrespuesta}" name="pregunta${pregunta.idpregunta}[]" class="tipo1 required condicionador2" datacondicion2="pregunta${respuesta.condicionList[0].preguntaCondicionada.idpregunta}">
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <input type="checkbox"  value="${respuesta.idrespuesta}" id="respuesta${respuesta.idrespuesta}" name="pregunta${pregunta.idpregunta}[]" class="tipo1 required">
-                                                    </c:otherwise>    
-                                                </c:choose> 
-
-                                                ${respuesta.respuesta}
-                                            </label>
-                                            <select name="ordenR${respuesta.idrespuesta}" id="ordenR${respuesta.idrespuesta}" disabled="disabled" class="required">
-                                                <option value=""></option>
-                                                <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="status">
-                                                    <option value="${status.index + 1}">${status.index + 1}</option>
-                                                </c:forEach>  
-                                                <c:choose>
-                                                    <c:when test="${pregunta.otro=='true'}">
-                                                        <option value="${fn:length(pregunta.respuestaList)+1}">${fn:length(pregunta.respuestaList)+1}</option>
-                                                    </c:when>
-                                                </c:choose>
-                                            </select>
-                                        </div>
-                                    </c:forEach>
-                                    <c:choose>
-                                        <c:when test="${pregunta.otro=='true'}">
-
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" value="otro"  name="pregunta${pregunta.idpregunta}[]" class="tipo1 required">
-                                                    ${pregunta.labelOtro}
-                                                </label>
-                                                <input type="text" tabindex="-1" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
-                                                <select name="ordenRP${pregunta.idpregunta}" id="ordenRP${pregunta.idpregunta}" disabled="disabled" class="required">
-                                                    <option></option>
-                                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="status">
-                                                        <option value="${status.index + 1}">${status.index + 1}</option>
                                                     </c:forEach>
-                                                    <option value="${fn:length(pregunta.respuestaList)+1}">${fn:length(pregunta.respuestaList)+1}</option>
-                                                </select>   
-                                            </div>
+                                                    <c:choose>
+                                                        <c:when test="${pregunta.otro=='true'}">
+                                                            <div class="radio">
+                                                                <label class="otroRadio">
+                                                                    <input type="radio"  value="otro" id="otro${pregunta.idpregunta}" name="pregunta${pregunta.idpregunta}">
+                                                                    ${pregunta.labelOtro}
+                                                                </label>
+                                                                <input type="text" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
+                                                            </div>
 
+                                                        </c:when>
+                                                    </c:choose>
+                                                </c:otherwise>
+                                            </c:choose> 
+                                        </div>
+                                    </div> 
+                                </div>
+                            </c:when>
+
+                            <%--Pregunta SOLO ordenamiento--%>
+                            <c:when test="${pregunta.getTipo() == '7'}">
+                                <c:choose>
+                                    <c:when test="${fn:length(pregunta.condicionList1)>0}">
+                                       <!-- <div class="row hide" id="pregunta${pregunta.idpregunta}"> -->
+                                        <div class="row" id="pregunta${pregunta.idpregunta}"> 
                                         </c:when>
-                                    </c:choose>
-
-                                </div>
-                            </div> 
-                            </div>
-                        </c:when>
-
-                        <%--Pregunta Abierta--%>
-                        <c:when test="${pregunta.getTipo() == '2'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>${pregunta.pregunta}</label>
-                                    <input type="text" class="form-control required" style="width: 90% !important;" name="respuesta${pregunta.idpregunta}">
-                                </div>
-                            </div>   
-                            </div>
-                        </c:when>
-                        <%--Pregunta Abierta--%>            
-                        <c:when test="${pregunta.getTipo() == '3'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>${pregunta.pregunta}</label>
-                                    <input type="text" class="form-control required" style="width: 90% !important;" name="respuesta${pregunta.idpregunta}">
-                                </div>
-                            </div>   
-                            </div>
-                        </c:when>
-                        <%--Comentario--%>
-                        <c:when test="${pregunta.getTipo() == '5'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-                            <div class="col-md-12 alert alert-info">
-                                ${pregunta.pregunta}
-                            </div>  
-                            </div>       
-                        </c:when>
-
-
-                        <%--Pregunta Abierta--%>
-                        <c:when test="${pregunta.getTipo() == '4'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}"> 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>    
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>${pregunta.pregunta}</label>
-                                    <textarea class="form-control required" style="width: 90% !important;" rows="4" name="respuesta${pregunta.idpregunta}"></textarea>
-                                </div>
-                            </div>
-
-                            </div>
-                        </c:when>  
-
-                        <c:when test="${pregunta.getTipo() == '9'}">
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList1)>0 && pregunta.condicionList1[0].tipo=='MostrarSI'}">
-                                    <div class="row hide" id="pregunta${pregunta.idpregunta}" > 
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="row" id="pregunta${pregunta.idpregunta}">
-                                </c:otherwise>        
-                            </c:choose>
-                            <c:choose>
-                                <c:when test="${fn:length(pregunta.condicionList)>0 && pregunta.condicionList[0].tipo=='MostrarSI'}">
-                                    <div class="col-md-12 condicionador">
-                                </c:when>
-                                <c:when test="${fn:length(pregunta.condicionList)>0 && pregunta.condicionList[0].tipo=='OcultarSI'}">
-                                    <div class="col-md-12 condicionador3">
-                                </c:when>    
-                                <c:otherwise>
-                                    <div class="col-md-12">
-                                </c:otherwise>        
-                            </c:choose>
-
-                            <div class="form-group">
-                                <label>${pregunta.pregunta}</label>
-                                <select name="pregunta${pregunta.idpregunta}" class="required">
-                                    <option value=""></option>    
-                                    <c:forEach items="${pregunta.respuestaList}" var="respuesta">
-                                        <c:choose>
-                                            <c:when test="${fn:length(respuesta.condicionList)>0}">
-                                                <option value="${respuesta.idrespuesta}">${respuesta.respuesta}</option>    
-                                            </c:when>
-                                            <c:otherwise>
-                                                <option value="${respuesta.idrespuesta}">${respuesta.respuesta}</option>    
+                                        <c:otherwise>
+                                            <div class="row" id="pregunta${pregunta.idpregunta}">
                                             </c:otherwise>        
                                         </c:choose>
-                                    </c:forEach>
-                                </select>
-                                <c:choose>
-                                    <c:when test="${pregunta.otro=='true'}">
-                                        <div class="radio">
-                                            <label class="otroRadio">
-                                                <input type="radio"  value="otro" id="otro${pregunta.idpregunta}" name="pregunta${pregunta.idpregunta}">
-                                                ${pregunta.labelOtro}
-                                            </label>
-                                            <input type="text" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>${pregunta.pregunta}</label>
+                                                <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="stats2">
+                                                    <div class="checkbox" style="padding-left: 0px;">
+                                                        <label>
+                                                            ${respuesta.respuesta}
+                                                        </label>
+                                                        <select name="ordenamiR${respuesta.idrespuesta}" id="ordenamiR${respuesta.idrespuesta}" class="required">
+                                                            <option>${resultadosxpregunta.get(status.index).get(stats2.index).orden}</option>
+                                                        </select>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </c:when>
+
+                                <%--Pregunta seleccion multiple multiple respuesta CON ordenamiento--%>            
+                                <c:when test="${pregunta.getTipo() == '1'}">
+                                    <c:choose>
+                                        <c:when test="${fn:length(pregunta.condicionList1)>0 && pregunta.condicionList1[0].tipo=='MostrarSI'}">
+                                           <!-- <div class="row hide" id="pregunta${pregunta.idpregunta}"> -->
+                                            <div class="row" id="pregunta${pregunta.idpregunta}"> 
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="row" id="pregunta${pregunta.idpregunta}">
+                                                </c:otherwise>        
+                                            </c:choose>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>${pregunta.pregunta}</label>
+                                                    <c:forEach items="${resultadosxpregunta.get(status.index)}" var="resultados">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" checked>
+                                                                <c:choose>
+                                                                    <c:when test="${resultados.respuestaIdrespuesta != null}">
+                                                                        ${resultados.respuestaIdrespuesta.respuesta}
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <b>${resultados.preguntaIdpregunta.labelOtro}: ${resultados.valor}</b>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+
+                                                            </label>
+                                                            <select disabled="disabled">
+                                                                <option value="${resultados.orden}">${resultados.orden}</option>
+                                                            </select>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                            </div> 
                                         </div>
-
                                     </c:when>
-                                </c:choose>
-                            </div>
-                            </div> 
-                            </div>
-                        </c:when>            
+
+                                    <%--Pregunta Abierta--%>
+                                    <c:when test="${pregunta.getTipo() == '2'}">
+                                        <c:choose>
+                                            <c:when test="${fn:length(pregunta.condicionList1)>0}">
+                                                <!--<div class="row hide" id="pregunta${pregunta.idpregunta}"> -->
+                                                <div class="row" id="pregunta${pregunta.idpregunta}"> 
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div class="row" id="pregunta${pregunta.idpregunta}">
+                                                    </c:otherwise>        
+                                                </c:choose>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>${pregunta.pregunta}</label>
+                                                        <input type="text" class="form-control required" style="width: 90% !important;" name="respuesta${pregunta.idpregunta}">
+                                                    </div>
+                                                </div>   
+                                            </div>
+                                        </c:when>
+                                        <%--Pregunta Abierta--%>            
+                                        <c:when test="${pregunta.getTipo() == '3'}">
+                                            <c:choose>
+                                                <c:when test="${fn:length(pregunta.condicionList1)>0}">
+                                                    <!-- <div class="row hide" id="pregunta${pregunta.idpregunta}"> -->
+                                                    <div class="row" id="pregunta${pregunta.idpregunta}"> 
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="row" id="pregunta${pregunta.idpregunta}">
+                                                        </c:otherwise>        
+                                                    </c:choose>
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label>${pregunta.pregunta}</label>
+                                                            <input type="text" class="form-control required" style="width: 90% !important;" name="respuesta${pregunta.idpregunta}" value="${resultadosxpregunta.get(status.index).get(0).valor}">
+                                                        </div>
+                                                    </div>   
+                                                </div>
+                                            </c:when>
+                                            <%--Comentario--%>
+                                            <c:when test="${pregunta.getTipo() == '5'}">
+                                                <c:choose>
+                                                    <c:when test="${fn:length(pregunta.condicionList1)>0}">
+                                                        <!--<div class="row hide" id="pregunta${pregunta.idpregunta}"> -->
+                                                        <div class="row" id="pregunta${pregunta.idpregunta}"> 
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <div class="row" id="pregunta${pregunta.idpregunta}">
+                                                            </c:otherwise>        
+                                                        </c:choose>
+                                                        <div class="col-md-12 alert alert-info">
+                                                            ${pregunta.pregunta}
+                                                        </div>  
+                                                    </div>       
+                                                </c:when>
 
 
-                    </c:choose>
-                </c:forEach>   
+                                                <%--Pregunta Abierta--%>
+                                                <c:when test="${pregunta.getTipo() == '4'}">
+                                                    <c:choose>
+                                                        <c:when test="${fn:length(pregunta.condicionList1)>0}">
+                                                            <%-- <div class="row hide" id="pregunta${pregunta.idpregunta}"> --%>
+                                                            <div class="row" id="pregunta${pregunta.idpregunta}"> 
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <div class="row" id="pregunta${pregunta.idpregunta}">
+                                                                </c:otherwise>        
+                                                            </c:choose>    
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label>${pregunta.pregunta}</label>
+                                                                    <c:choose>
+                                                                        <c:when test="${resultadosxpregunta.get(status.index).size() != 0}">
+                                                                            <textarea class="form-control required" style="width: 90% !important;" rows="4" name="respuesta${pregunta.idpregunta}">${resultadosxpregunta.get(status.index).get(0).valor}</textarea>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <textarea class="form-control" style="width: 90% !important;" rows="4" ></textarea>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
 
-                <div class="row">   
-                    <button id="botonEnviar" class="btn btn-primary" data-content="Env&iacute;a la encuesta evaluada. Verifique que todas las preguntas han sido respondidas correctamente. Esta operación no se podrá deshacer."  value="1" data-original-title="Enviar encuesta" type="button">Enviar</button>
-                </div>
+                                                                </div>
+                                                            </div>
 
-            </form> 
+                                                        </div>
+                                                    </c:when>  
 
-        </div>
-        <!-- Placed at the end of the document so the pages load faster -->
-        <!--<script type="text/javascript" src="http://code.jquery.com/jquery.min.js">-->
-        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+                                                    <c:when test="${pregunta.getTipo() == '9'}">
+                                                        <c:choose>
+                                                            <c:when test="${fn:length(pregunta.condicionList1)>0 && pregunta.condicionList1[0].tipo=='MostrarSI'}">
+                                                                <%-- <div class="row hide" id="pregunta${pregunta.idpregunta}" > --%>
+                                                                <div class="row" id="pregunta${pregunta.idpregunta}" > 
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <div class="row" id="pregunta${pregunta.idpregunta}">
+                                                                    </c:otherwise>        
+                                                                </c:choose>
+                                                                <c:choose>
+                                                                    <c:when test="${fn:length(pregunta.condicionList)>0 && pregunta.condicionList[0].tipo=='MostrarSI'}">
+                                                                        <div class="col-md-12 condicionador">
+                                                                        </c:when>
+                                                                        <c:when test="${fn:length(pregunta.condicionList)>0 && pregunta.condicionList[0].tipo=='OcultarSI'}">
+                                                                            <div class="col-md-12 condicionador3">
+                                                                            </c:when>    
+                                                                            <c:otherwise>
+                                                                                <div class="col-md-12">
+                                                                                </c:otherwise>        
+                                                                            </c:choose>
 
-        <script src="dist/js/bootstrap.min.js"></script>
-        <!--<script src='//code.jquery.com/ui/1.10.4/jquery-ui.js'></script>-->
-        <!--<script src="http://jqueryvalidation.org/files/dist/jquery.validate.js"></script>-->
-        <!--<script src="<%=request.getContextPath()%>/assets/js/jquery.metadata.js"></script>-->
-        <script src="dist/js/responder.js"></script>
-    </body>
-</html>
+                                                                            <div class="form-group">
+                                                                                <label>${pregunta.pregunta}</label>
+                                                                                <select name="pregunta${pregunta.idpregunta}" class="required">
+                                                                                    <option>
+                                                                                        <c:choose>
+                                                                                            <c:when test="${resultadosxpregunta.get(status.index).size() != 0}">
+                                                                                                ${resultadosxpregunta.get(status.index).get(0).respuestaIdrespuesta.respuesta}
 
-<div class="modal fade" id="myModalGracias" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Gracias</h4>
-            </div>
-            <div class="modal-body">
-                La encuesta se ha enviado correctamente.
-                Muchas gracias por participar del proceso.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
+                                                                                            </c:when>
+                                                                                        </c:choose>
+                                                                                    </option>   
+                                                                                </select>
+                                                                                <c:choose>
+                                                                                    <c:when test="${pregunta.otro=='true'}">
+                                                                                        <div class="radio">
+                                                                                            <label class="otroRadio">
+                                                                                                <input type="radio"  value="otro" id="otro${pregunta.idpregunta}" name="pregunta${pregunta.idpregunta}">
+                                                                                                ${pregunta.labelOtro}
+                                                                                            </label>
+                                                                                            <input type="text" name="preguntaOtro${pregunta.idpregunta}" class="required" disabled="disabled"/>
+                                                                                        </div>
+
+                                                                                    </c:when>
+                                                                                </c:choose>
+                                                                            </div>
+                                                                        </div> 
+                                                                    </div>
+                                                                </c:when>            
+
+
+                                                            </c:choose>
+                                                        </c:forEach>   
+
+                                                        <div class="row">   
+                                                            <button id="botonEnviar" class="btn btn-primary" data-content="Env&iacute;a la encuesta evaluada. Verifique que todas las preguntas han sido respondidas correctamente. Esta operación no se podrá deshacer."  value="1" data-original-title="Enviar encuesta" type="button">Enviar</button>
+                                                        </div>
+
+                                                        </form> 
+
+                                                    </div>
+                                                    <!-- Placed at the end of the document so the pages load faster -->
+                                                    <!--<script type="text/javascript" src="http://code.jquery.com/jquery.min.js">-->
+                                                    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+                                                    <script src="dist/js/bootstrap.min.js"></script>
+                                                    <!--<script src='//code.jquery.com/ui/1.10.4/jquery-ui.js'></script>-->
+                                                    <!--<script src="http://jqueryvalidation.org/files/dist/jquery.validate.js"></script>-->
+                                                    <!--<script src="<%=request.getContextPath()%>/assets/js/jquery.metadata.js"></script>-->
+                                                    <script src="dist/js/responder.js"></script>
+                                                    </body>
+                                                    </html>
+
+                                                    <div class="modal fade" id="myModalGracias" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                                    <h4 class="modal-title" id="myModalLabel">Gracias</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    La encuesta se ha enviado correctamente.
+                                                                    Muchas gracias por participar del proceso.
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
 

@@ -90,9 +90,9 @@ public class Encuestas extends HttpServlet {
                         totalr += resultados.size();
                     }
                     if ("true".equals(pregunta.getOtro())) {
-                        List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", null);
-                        cantidadRespuestasPreguntaActual.add("" + resultados.size());
-                        totalr += resultados.size();
+                        List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
+                        cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                        totalr += resultados2.size();
                     }
                     totalrespuestas.add(""+totalr);
                     cantidadXrespuestaXPregunta.add(cantidadRespuestasPreguntaActual);
@@ -214,7 +214,7 @@ public class Encuestas extends HttpServlet {
                         Resultados re = new Resultados();
                         re.setPersonaIdpersona(recienCreado);
                         re.setPreguntaIdpregunta(pregunta);
-                        String respuesta1 = (String) request.getParameter("respuesta" + pregunta.getIdpregunta());
+                        String respuesta1 = (String) request.getParameter("respuestaAbierta" + pregunta.getIdpregunta());
                         if (respuesta1 == null || respuesta1.equals("")) {
                             re.setValor("NO RESPONDIO");
                         } else {

@@ -216,7 +216,7 @@
                                                                 <c:choose>
                                                                     <c:when test="${fn:length(respuesta.condicionList)>0}">
                                                                         <label>
-                                                                            <input type="radio" value="respuesta${respuesta.idrespuesta}" id="respuesta${respuesta.idrespuesta}" name="pregunta${pregunta.idpregunta}" class="datacondicion required"
+                                                                            <input type="radio" value="${respuesta.idrespuesta}" id="respuesta${respuesta.idrespuesta}" name="pregunta${pregunta.idpregunta}" class="datacondicion required"
                                                                                    datacondicion="<c:forEach items='${respuesta.condicionList}' var='condicion' varStatus='status'>
                                                                                        <c:choose>
                                                                                            <c:when test='${status.index+1 == fn:length(respuesta.condicionList)}'>
@@ -368,7 +368,7 @@
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label>${pregunta.pregunta}</label>
-                                                                    <input type="text" class="form-control required" style="width: 90% !important;" name="respuesta${pregunta.idpregunta}">
+                                                                    <input type="text" class="form-control required" style="width: 90% !important;" name="respuestaAbierta${pregunta.idpregunta}">
                                                                 </div>
                                                             </div>   
                                                         </div>
@@ -386,7 +386,7 @@
                                                                 <div class="col-md-12">
                                                                     <div class="form-group">
                                                                         <label>${pregunta.pregunta}</label>
-                                                                        <input type="text" class="form-control required" style="width: 90% !important;" name="respuesta${pregunta.idpregunta}">
+                                                                        <input type="text" class="form-control required" style="width: 90% !important;" name="respuestaAbierta${pregunta.idpregunta}">
                                                                     </div>
                                                                 </div>   
                                                             </div>
@@ -421,7 +421,7 @@
                                                                         <div class="col-md-12">
                                                                             <div class="form-group">
                                                                                 <label>${pregunta.pregunta}</label>
-                                                                                <textarea class="form-control required" style="width: 90% !important;" rows="4" name="respuesta${pregunta.idpregunta}"></textarea>
+                                                                                <textarea class="form-control required" style="width: 90% !important;" rows="4" name="respuestaAbierta${pregunta.idpregunta}"></textarea>
                                                                             </div>
                                                                         </div>
 

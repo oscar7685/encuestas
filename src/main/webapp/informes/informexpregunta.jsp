@@ -17,7 +17,8 @@
             </c:forEach>
             <c:choose>
                 <c:when test="${pregunta.otro == 'true'}">
-                    ${pregunta.otro} : ${cantidadXrespuestaXPregunta.get(iter.index).get(iter2.index + 1)} <br/>
+                    <b>${pregunta.labelOtro} : ${cantidadXrespuestaXPregunta.get(iter.index).get(actual + 1)} </b>
+                    <br/>
                 </c:when>
             </c:choose>
                     total Respuestas: ${totalrespuestas.get(iter.index)} <br/>

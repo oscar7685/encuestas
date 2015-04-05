@@ -80,4 +80,9 @@ public abstract class AbstractFacade<T> {
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery("SELECT c FROM " + entityClass.getSimpleName() + " c WHERE c." + property + " = :name and c."+property2+" = :name2", entityClass).setParameter("name", m).setParameter("name2", m2).getResultList();
     }
+    public List<T> findByList2Especial(String property, Object m) {
+        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        cq.select(cq.from(entityClass));
+        return getEntityManager().createQuery("SELECT c FROM " + entityClass.getSimpleName() + " c WHERE c." + property + " = :name and c.valor is not null", entityClass).setParameter("name", m).getResultList();
+    }
 }
