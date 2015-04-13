@@ -80,9 +80,19 @@ public abstract class AbstractFacade<T> {
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery("SELECT c FROM " + entityClass.getSimpleName() + " c WHERE c." + property + " = :name and c."+property2+" = :name2", entityClass).setParameter("name", m).setParameter("name2", m2).getResultList();
     }
+    public List<T> findByList3(String property, Object m, String property2, Object m2 , String property3, Object m3) {
+        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        cq.select(cq.from(entityClass));
+        return getEntityManager().createQuery("SELECT c FROM " + entityClass.getSimpleName() + " c WHERE c." + property + " = :name and c."+property2+" = :name2 and c."+property3+" = :name3", entityClass).setParameter("name", m).setParameter("name2", m2).setParameter("name3", m3).getResultList();
+    }
     public List<T> findByList2Especial(String property, Object m) {
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery("SELECT c FROM " + entityClass.getSimpleName() + " c WHERE c." + property + " = :name and c.valor is not null", entityClass).setParameter("name", m).getResultList();
+    }
+    public List<T> findByList2Especial2(String property, Object m, String property2, Object m2 ) {
+        javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        cq.select(cq.from(entityClass));
+        return getEntityManager().createQuery("SELECT c FROM " + entityClass.getSimpleName() + " c WHERE c." + property + " = :name  and c." + property2 + " = :name2 and c.valor is not null", entityClass).setParameter("name", m).setParameter("name2", m2).getResultList();
     }
 }
