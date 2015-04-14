@@ -8,9 +8,9 @@
     </head>
     <body>
         <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
-            
-           
-                   <br/>
+
+
+            <br/>
             pregunta: ${pregunta.pregunta}<br/>
             <c:choose>
                 <c:when test="${pregunta.getTipo() == '0'}">
@@ -39,30 +39,37 @@
                         <c:choose>
                             <c:when test="${pregunta.otro == 'true'}">
                                 ${aux+2}: ${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(aux+1)}
-                               <b>${iter.index} . ${iter2.index} . ${aux+1}</b>
+                                <b>${iter.index} . ${iter2.index} . ${aux+1}</b>
                             </c:when>
                         </c:choose>   
                         <br/>
                         <c:set var="aux5" value="${iter2.index}"></c:set>
                     </c:forEach>
                     <c:choose>
-                        <c:when test="${pregunta.otro = true}">
-                         <%--   respuesta: ${pregunta.labelOtro}  ${cantidadXrespuestaXPregunta.get(iter.index).get(aux5+1)} 
+                        <c:when test="${pregunta.otro == 'true'}">
+                            respuesta: ${pregunta.labelOtro}  ${cantidadXrespuestaXPregunta.get(iter.index).get(aux5+1)} 
                             <c:set var="aux7" value="0"></c:set>
                             <c:forEach items="${pregunta.respuestaList}" var="otra2" varStatus="otraStatus2">
                                 ${otraStatus2.index+1}: ${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(aux5+1).get(otraStatus2.index)}
                                 <c:set var="aux7" value="${otraStatus2.index}"></c:set>
                             </c:forEach>
-                         --%>
+                            ${aux7+2}: ${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(aux5+1).get(aux7+1)}
                         </c:when>
                     </c:choose>
                     <br/>    
 
 
-                  <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
+                    <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
+                </c:when> 
+                <c:when test="${pregunta.getTipo() == '2' || pregunta.getTipo() == '3'  || pregunta.getTipo() == '4'}">
+                    Respuestas: 
+                    <c:forEach items="${RespuestasPreguntasAbiertas.get(iter.index)}" var="respuestaxx" varStatus="respuestaStatus">
+                    ${respuestaxx} ,
+                    </c:forEach>
                 </c:when>    
+
             </c:choose> 
-            
+
         </c:forEach>
     </body>
 </html>

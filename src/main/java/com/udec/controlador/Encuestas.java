@@ -77,15 +77,17 @@ public class Encuestas extends HttpServlet {
                 int num = 2;
                 int totalr = 0;
                 Encuesta e = encuestaFacade.find(num);
-                List<Pregunta> preguntas =  encuestaFacade.preguntasOrdenadasXorden(e);
-                
+                List<Pregunta> preguntas = encuestaFacade.preguntasOrdenadasXorden(e);
+
+                List<List<String>> RespuestasPreguntasAbiertas = new ArrayList<List<String>>();
+
                 List<String> totalrespuestas = new ArrayList<String>();
                 List<List<String>> cantidadXrespuestaXPregunta = new ArrayList<List<String>>();
 
                 List<List<List<String>>> cantidadXOrdenXrespuestaXPregunta = new ArrayList<List<List<String>>>();
-                
+                int preguntaIndex = 0;
                 for (Pregunta pregunta : preguntas) {
-                    System.out.println("pregunta:" + pregunta.getPregunta());
+                    List<String> resultadosAbiertaPreguntaActual = new ArrayList<String>();
                     totalr = 0;
                     List<String> cantidadRespuestasPreguntaActual = new ArrayList<String>();
                     List<List<String>> cantidadOrdenRespuestasPreguntaActual = new ArrayList<List<String>>();
@@ -103,11 +105,11 @@ public class Encuestas extends HttpServlet {
                             totalr += resultados2.size();
                         }
 
-                        
+
                     } else if ("1".equals(pregunta.getTipo())) {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
-                        
+
                         for (Respuesta respuesta : respuestas) {
                             List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
                             List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
@@ -118,13 +120,8 @@ public class Encuestas extends HttpServlet {
                                     cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
                                 }
 
-                                for (int i = 0; i <= respuestas.size(); i++) {
-                                    List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial2("preguntaIdpregunta", pregunta, "orden", i + 1);
-                                    cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados2.size());
-                                    
-                                }
+
                             } else {
-                                System.out.println("");
                                 for (int i = 0; i < respuestas.size(); i++) {
                                     List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
                                     cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
@@ -134,23 +131,47 @@ public class Encuestas extends HttpServlet {
                             cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
                             cantidadRespuestasPreguntaActual.add("" + resultados.size());
                             totalr += resultados.size();
-                            
+
                         }
                         if ("true".equals(pregunta.getOtro())) {
+                            List<String> cantidadOrdenRespuestasActual22 = new ArrayList<String>();
+                            for (int i = 0; i <= respuestas.size(); i++) {
+                                List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial2("preguntaIdpregunta", pregunta, "orden", i + 1);
+                                cantidadOrdenRespuestasActual22.add("" + CantidadOrdenresultados2.size());
+
+                            }
+                            cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual22);
+                            //cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                            //totalr += resultados.size();
+
                             List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
                             cantidadRespuestasPreguntaActual.add("" + resultados2.size());
                             totalr += resultados2.size();
                         }
+                    } else if ("2".equals(pregunta.getTipo()) || "3".equals(pregunta.getTipo()) || "4".equals(pregunta.getTipo())) {
+                        List<Resultados> resultadoAbierta = resultadosFacade.findByList("preguntaIdpregunta", pregunta);
+                        for (Resultados resultados : resultadoAbierta) {
+                            resultadosAbiertaPreguntaActual.add(resultados.getValor());
+                        }
+                        RespuestasPreguntasAbiertas.add(resultadosAbiertaPreguntaActual);
+
+
                     }
+                    if (RespuestasPreguntasAbiertas.size() < preguntaIndex + 1) {
+                        RespuestasPreguntasAbiertas.add(new ArrayList<String>());
+                    }
+
+                    preguntaIndex++;
                     totalrespuestas.add("" + totalr);
                     cantidadXrespuestaXPregunta.add(cantidadRespuestasPreguntaActual);
                     cantidadXOrdenXrespuestaXPregunta.add(cantidadOrdenRespuestasPreguntaActual);
-                    
+
                 }
                 sesion.setAttribute("preguntas", preguntas);
                 sesion.setAttribute("totalrespuestas", totalrespuestas);
                 sesion.setAttribute("cantidadXrespuestaXPregunta", cantidadXrespuestaXPregunta);
                 sesion.setAttribute("cantidadXOrdenXrespuestaXPregunta", cantidadXOrdenXrespuestaXPregunta);
+                sesion.setAttribute("RespuestasPreguntasAbiertas", RespuestasPreguntasAbiertas);
                 String url = "informes/informexpregunta.jsp";
                 RequestDispatcher rd = request.getRequestDispatcher(url);
                 rd.forward(request, response);
