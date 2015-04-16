@@ -14,10 +14,10 @@
             pregunta: ${pregunta.pregunta}<br/>
             <c:choose>
                 <c:when test="${pregunta.getTipo() == '0'}">
-
+                    <c:set var="actual" value="2000"></c:set>
                     <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="iter2">
                         respuesta: ${respuesta.respuesta}  ${cantidadXrespuestaXPregunta.get(iter.index).get(iter2.index)} <br/>
-
+                        <c:set var="actual" value="${iter2.index}"></c:set>
                     </c:forEach>
                     <c:choose>
                         <c:when test="${pregunta.otro == 'true'}">
@@ -58,16 +58,28 @@
                     </c:choose>
                     <br/>    
 
-
                     <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
                 </c:when> 
                 <c:when test="${pregunta.getTipo() == '2' || pregunta.getTipo() == '3'  || pregunta.getTipo() == '4'}">
                     Respuestas: 
                     <c:forEach items="${RespuestasPreguntasAbiertas.get(iter.index)}" var="respuestaxx" varStatus="respuestaStatus">
-                    ${respuestaxx} ,
+                        ${respuestaxx} ,
                     </c:forEach>
                 </c:when>    
-
+                <c:when test="${pregunta.getTipo() == '6'}">
+                     <c:set var="actual6" value="2000"></c:set>
+                    <c:forEach items="${pregunta.respuestaList}" var="respuesta6" varStatus="iter6">
+                        respuesta: ${respuesta6.respuesta}  ${cantidadXrespuestaXPregunta6.get(iter.index).get(iter6.index)} <br/>
+                        <c:set var="actual6" value="${iter6.index}"></c:set>
+                    </c:forEach>
+                    <c:choose>
+                        <c:when test="${pregunta.otro == 'true'}">
+                            <b>${pregunta.labelOtro} : ${cantidadXrespuestaXPregunta6.get(iter.index).get(actual6 + 1)} </b>
+                            <br/>
+                        </c:when>
+                    </c:choose>
+                    total Respuestas: ${totalrespuestas.get(iter.index)} <br/>
+                </c:when>    
             </c:choose> 
 
         </c:forEach>

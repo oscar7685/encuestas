@@ -56,9 +56,8 @@ public class Encuestas extends HttpServlet {
     private final static Logger LOGGER = Logger.getLogger(Encuestas.class);
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -74,7 +73,7 @@ public class Encuestas extends HttpServlet {
         try {
 
             if (accion.equals("informeXpregunta")) {
-                int num = 2;
+                int num = 1;
                 int totalr = 0;
                 Encuesta e = encuestaFacade.find(num);
                 List<Pregunta> preguntas = encuestaFacade.preguntasOrdenadasXorden(e);
@@ -83,6 +82,7 @@ public class Encuestas extends HttpServlet {
 
                 List<String> totalrespuestas = new ArrayList<String>();
                 List<List<String>> cantidadXrespuestaXPregunta = new ArrayList<List<String>>();
+                List<List<String>> cantidadXrespuestaXPregunta6 = new ArrayList<List<String>>();
 
                 List<List<List<String>>> cantidadXOrdenXrespuestaXPregunta = new ArrayList<List<List<String>>>();
                 int preguntaIndex = 0;
@@ -90,6 +90,7 @@ public class Encuestas extends HttpServlet {
                     List<String> resultadosAbiertaPreguntaActual = new ArrayList<String>();
                     totalr = 0;
                     List<String> cantidadRespuestasPreguntaActual = new ArrayList<String>();
+                    List<String> cantidadRespuestasPreguntaActual6 = new ArrayList<String>();
                     List<List<String>> cantidadOrdenRespuestasPreguntaActual = new ArrayList<List<String>>();
                     if ("0".equals(pregunta.getTipo())) {
                         //Preguntas tipo 0  seleccion multiple unica respuesta
@@ -105,7 +106,6 @@ public class Encuestas extends HttpServlet {
                             totalr += resultados2.size();
                         }
 
-
                     } else if ("1".equals(pregunta.getTipo())) {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
@@ -119,7 +119,6 @@ public class Encuestas extends HttpServlet {
                                     List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
                                     cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
                                 }
-
 
                             } else {
                                 for (int i = 0; i < respuestas.size(); i++) {
@@ -155,21 +154,44 @@ public class Encuestas extends HttpServlet {
                         }
                         RespuestasPreguntasAbiertas.add(resultadosAbiertaPreguntaActual);
 
+                    } else if ("6".equals(pregunta.getTipo())) {
+                        //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
+                        List<Respuesta> respuestas6 = pregunta.getRespuestaList();
 
-                    }
+                        for (Respuesta respuesta : respuestas6) {
+                            List<Resultados> resultados6 = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                            cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
+                            totalr += resultados6.size();
+
+                        }
+                        if ("true".equals(pregunta.getOtro())) {
+                            List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
+                            cantidadRespuestasPreguntaActual6.add("" + resultados2.size());
+                            totalr += resultados2.size();
+                        }
+                    } 
+                        
+                    
                     if (RespuestasPreguntasAbiertas.size() < preguntaIndex + 1) {
                         RespuestasPreguntasAbiertas.add(new ArrayList<String>());
+                    }
+                    
+                    if (! "6".equals(pregunta.getTipo())){
+                    cantidadRespuestasPreguntaActual6.add("NA");
                     }
 
                     preguntaIndex++;
                     totalrespuestas.add("" + totalr);
                     cantidadXrespuestaXPregunta.add(cantidadRespuestasPreguntaActual);
+                    cantidadXrespuestaXPregunta6.add(cantidadRespuestasPreguntaActual6);
                     cantidadXOrdenXrespuestaXPregunta.add(cantidadOrdenRespuestasPreguntaActual);
+                    //cantidadXOrdenXrespuestaXPregunta.add(cantidadOrdenRespuestasPreguntaActual6);
 
                 }
                 sesion.setAttribute("preguntas", preguntas);
                 sesion.setAttribute("totalrespuestas", totalrespuestas);
                 sesion.setAttribute("cantidadXrespuestaXPregunta", cantidadXrespuestaXPregunta);
+                sesion.setAttribute("cantidadXrespuestaXPregunta6", cantidadXrespuestaXPregunta6); //tipo 6
                 sesion.setAttribute("cantidadXOrdenXrespuestaXPregunta", cantidadXOrdenXrespuestaXPregunta);
                 sesion.setAttribute("RespuestasPreguntasAbiertas", RespuestasPreguntasAbiertas);
                 String url = "informes/informexpregunta.jsp";
@@ -495,8 +517,7 @@ public class Encuestas extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -510,8 +531,7 @@ public class Encuestas extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
