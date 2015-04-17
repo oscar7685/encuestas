@@ -64,6 +64,11 @@
                         ${respuestaxx} ,
                     </c:forEach>
                 </c:when>    
+                 <c:when test="${pregunta.getTipo() == '9'}">
+                    <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="iter2">
+                        respuesta: ${respuesta.respuesta}  ${cantidadXrespuestaXPregunta.get(iter.index).get(iter2.index)} <br/>
+                    </c:forEach>
+                </c:when>           
                 <c:when test="${pregunta.getTipo() == '6'}">
                     <c:forEach items="${pregunta.respuestaList}" var="respuesta6" varStatus="iter6">
                         respuesta: ${respuesta6.respuesta}  ${cantidadXrespuestaXPregunta6.get(iter.index).get(iter6.index)} <br/>

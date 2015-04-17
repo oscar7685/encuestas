@@ -4,7 +4,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Avalon Admin Theme</title>
+        <title>Cátedra Unesco para la Lectura y la Escritura</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,7 +13,12 @@
         <meta name="author" content="The Red Team">
 
         <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,700' rel='stylesheet' type='text/css'>
-
+        <style type="text/css">
+            .morris-hover{position:absolute;z-index:1000;}
+            .morris-hover.morris-default-style{border-radius:10px;padding:6px;color:#666;background:rgba(255, 255, 255, 0.8);border:solid 2px rgba(230, 230, 230, 0.8);font-family:sans-serif;font-size:12px;text-align:center;}
+            .morris-hover.morris-default-style .morris-hover-row-label{font-weight:bold;margin:0.25em 0;}
+            .morris-hover.morris-default-style .morris-hover-point{white-space:nowrap;margin:0.1em 0;} 
+        </style>
         <!--[if lt IE 10]>
             <script src="assets/js/media.match.min.js"></script>
             <script src="assets/js/placeholder.min.js"></script>
@@ -49,7 +54,7 @@
 
             <div class="yamm navbar-left navbar-collapse collapse in">
                 <ul class="nav navbar-nav">
-                    <li><a href="../" ><strong>Inicio</strong></a></li>
+                    <li><a href="<%=request.getContextPath()%>/"><strong>Inicio</strong></a></li>
                 </ul>
             </div>
 
@@ -64,33 +69,38 @@
                             <div class="page-heading">            
                                 <h1>Informe por Pregunta</h1>
                             </div>
-
-
-
                             <div class="container-fluid">
                                 <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
-                                   <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h2>${pregunta.pregunta}</h2>
-                                            </div>
-                                            <div class="panel-body">
-                                                
-                                                    <div id="div${pregunta.idpregunta}">
+                                    <c:choose>
+                                        <c:when test="${pregunta.getTipo() != '5'}">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <h2>${pregunta.pregunta}</h2>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <div id="div${pregunta.idpregunta}">
+                                                                <c:choose>
+                                                                    <c:when test="${pregunta.getTipo() == '3' || pregunta.getTipo() == '4' || pregunta.getTipo() == '2'}">
+                                                                        <c:forEach items="${RespuestasPreguntasAbiertas.get(iter.index)}" var="respuestaxx" varStatus="respuestaStatus">
+                                                                            ${respuestaxx} ,
+                                                                        </c:forEach>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                              
+                                                </div>
+
+                                            </div> 
+                                        </c:when>
+                                    </c:choose>
 
 
-                                            </div>
-                                        </div>
-                                    </div>
-                                   
-                                </div> 
-                                    
                                 </c:forEach>
-                                
-                                
+
+
 
                             </div> <!-- .container-fluid -->
                         </div> <!-- #page-content -->
@@ -568,42 +578,96 @@
         <!--<script src="assets/js/jqueryui-1.9.2.min.js"></script> 							<!-- Load jQueryUI -->
         <script src="<%=request.getContextPath()%>/assets/js/bootstrap.min.js"></script> 				<!-- Load Bootstrap -->
         <!-- End loading page level scripts-->
-       <!-- <script src="<%=request.getContextPath()%>/assets/plugins/sparklines/jquery.sparklines.min.js"></script>  	<!-- Sparkline -->-->
+       <!-- <script src="<%=request.getContextPath()%>/assets/plugins/sparklines/jquery.sparklines.min.js"></script>  	<!-- Sparkline -->
         <script src="<%=request.getContextPath()%>/assets/js/application2.js"></script>
         <script src="<%=request.getContextPath()%>/assets/js/raphael.min.js"></script> <!-- Load Raphael as Dependency -->
         <script src="<%=request.getContextPath()%>/assets/js/morris.min.js"></script>  <!-- Load Morris.js -->
 
 
         <script type="text/javascript">
-            var datosTF1vsTF2
+            var datosTF1vsTF2, datos9, datos1;
             $(function() {
             <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
                 <c:choose>
                     <c:when test="${pregunta.getTipo() == '0'}">
+                $.ajax({
+                    type: "POST",
+                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                    dataType: 'json',
+                    success: function(dat)
+                    {
+                        datosTF1vsTF2 = dat['0']["datos"];
+                        Morris.Bar({
+                            element: 'div${pregunta.idpregunta}',
+                            data: datosTF1vsTF2,
+                            hoverCallback: function(index, options, content) {
+                                return(content);
+                            },
+                            xkey: 'y',
+                            ykeys: ['a'],
+                            labels: ['Cantidad de respuestas contestadas'],
+                            //xLabelAngle: 30,
+                            //padding: 100,
+                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                        });
+                    } //fin success
+                }); //fin del $.ajax
 
-                        $.ajax({
-                            type: "POST",
-                            url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
-                            dataType: 'json',
-                            success: function(dat)
-                            {
-                                datosTF1vsTF2 = dat['0']["datos"];
-                                Morris.Bar({
-                                    element: 'div${pregunta.idpregunta}',
-                                    data: datosTF1vsTF2,
-                                    xkey: 'y',
-                                    ykeys: ['a'],
-                                    labels: ['Cantidad de respuestas contestadas'],
-                                    lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
-                                });
-                            } //fin success
-                        }); //fin del $.ajax
+
+                    </c:when>
+                    <c:when test="${pregunta.getTipo() == '9'}">
+                $.ajax({
+                    type: "POST",
+                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                    dataType: 'json',
+                    success: function(dat)
+                    {
+                        datos9 = dat['0']["datos"];
+                        Morris.Bar({
+                            element: 'div${pregunta.idpregunta}',
+                            data: datos9,
+                            xkey: 'y',
+                            ykeys: ['a'],
+                            labels: ['Cantidad de respuestas contestadas'],
+                            //xLabelAngle: 30,
+                            //padding: 100,
+                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                        });
+                    } //fin success
+                }); //fin del $.ajax
 
 
-                    </c:when>                   
-                </c:choose> 
+                    </c:when>
+
+
+                    <c:when test="${pregunta.getTipo() == '1'}">
+                $.ajax({
+                    type: "POST",
+                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                    dataType: 'json',
+                    success: function(dat)
+                    {
+                        datos1 = dat['0']["datos"];
+                        Morris.Bar({
+                            element: 'div${pregunta.idpregunta}',
+                            data: datos1,
+                            xkey: 'y',
+                            ykeys: ['a'],
+                            //padding: 100,
+                            labels: ['Cantidad de respuestas contestadas'],
+                            //xLabelAngle: 30,
+                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                        });
+                    } //fin success
+                }); //fin del $.ajax
+
+
+                    </c:when>
+
+
+                </c:choose>
             </c:forEach>
-                });
+            });
         </script>
     </body>
 </html>

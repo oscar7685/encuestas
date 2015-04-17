@@ -56,9 +56,8 @@ public class Encuestas extends HttpServlet {
     private final static Logger LOGGER = Logger.getLogger(Encuestas.class);
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -186,11 +185,19 @@ public class Encuestas extends HttpServlet {
                                 cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
                             }
 
-
                             cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
                             cantidadRespuestasPreguntaActual.add("" + resultados.size());
                             totalr += resultados.size();
 
+                        }
+
+                    } else if ("9".equals(pregunta.getTipo())) {
+                        //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
+                        List<Respuesta> respuestas = pregunta.getRespuestaList();
+                        for (Respuesta respuesta : respuestas) {
+                            List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                            cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                            totalr += resultados.size();
                         }
 
                     }
@@ -223,25 +230,24 @@ public class Encuestas extends HttpServlet {
                     url = "informes/informe.jsp";
                 }
 
-
                 RequestDispatcher rd = request.getRequestDispatcher(url);
                 rd.forward(request, response);
 
             } else if (accion.equals("resultadosP")) {
                 response.setContentType("application/json");
-                
+
                 String preguntaid = (String) request.getParameter("preguntaid");
                 int indicePregunta = Integer.parseInt(preguntaid);
-                 List<List<String>> aux = (List<List<String>>)sesion.getAttribute("cantidadXrespuestaXPregunta");
-                 List<Pregunta> preg =  (List<Pregunta>)sesion.getAttribute("preguntas");
-                
+                List<List<String>> aux = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta");
+                List<Pregunta> preg = (List<Pregunta>) sesion.getAttribute("preguntas");
+
                 String aux4 = "{ \"datos\":[";
 
                 try {
                     for (int i = 0; i < preg.get(indicePregunta).getRespuestaList().size(); i++) {
                         String aux5 = ""
                                 + "{"
-                                + "\"y\": \""+ preg.get(indicePregunta).getRespuestaList().get(i).getRespuesta().trim()+ "\" ," + " \"a\": \"" + aux.get(indicePregunta).get(i)
+                                + "\"y\": \"" + preg.get(indicePregunta).getRespuestaList().get(i).getRespuesta().trim() + "\" ," + " \"a\": \"" + aux.get(indicePregunta).get(i)
                                 + "\""
                                 + "},"
                                 + "";
@@ -576,8 +582,7 @@ public class Encuestas extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -591,8 +596,7 @@ public class Encuestas extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
