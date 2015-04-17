@@ -8,8 +8,6 @@
     </head>
     <body>
         <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
-
-
             <br/>
             pregunta: ${pregunta.pregunta}<br/>
             <c:choose>
@@ -67,19 +65,25 @@
                     </c:forEach>
                 </c:when>    
                 <c:when test="${pregunta.getTipo() == '6'}">
-                     <c:set var="actual6" value="2000"></c:set>
                     <c:forEach items="${pregunta.respuestaList}" var="respuesta6" varStatus="iter6">
                         respuesta: ${respuesta6.respuesta}  ${cantidadXrespuestaXPregunta6.get(iter.index).get(iter6.index)} <br/>
-                        <c:set var="actual6" value="${iter6.index}"></c:set>
                     </c:forEach>
-                    <c:choose>
-                        <c:when test="${pregunta.otro == 'true'}">
-                            <b>${pregunta.labelOtro} : ${cantidadXrespuestaXPregunta6.get(iter.index).get(actual6 + 1)} </b>
-                            <br/>
-                        </c:when>
-                    </c:choose>
                     total Respuestas: ${totalrespuestas.get(iter.index)} <br/>
-                </c:when>    
+                </c:when>
+                <c:when test="${pregunta.getTipo() == '7'}">
+                    <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="iter2">
+                        respuesta: ${respuesta.respuesta}  
+                        
+                        <c:forEach items="${pregunta.respuestaList}" var="otra" varStatus="otraStatus">
+                            ${otraStatus.index+1}: ${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(otraStatus.index)}
+                        </c:forEach>    
+                        <br/>
+                       
+                    </c:forEach>
+                    <br/>    
+
+                    <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
+                </c:when>  
             </c:choose> 
 
         </c:forEach>

@@ -56,8 +56,9 @@ public class Encuestas extends HttpServlet {
     private final static Logger LOGGER = Logger.getLogger(Encuestas.class);
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP
+     * <code>GET</code> and
+     * <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -73,7 +74,9 @@ public class Encuestas extends HttpServlet {
         try {
 
             if (accion.equals("informeXpregunta")) {
-                int num = 1;
+                String para = (String) request.getParameter("para");
+                String para2 = (String) request.getParameter("para2");
+                int num = Integer.parseInt(para);
                 int totalr = 0;
                 Encuesta e = encuestaFacade.find(num);
                 List<Pregunta> preguntas = encuestaFacade.preguntasOrdenadasXorden(e);
@@ -87,6 +90,7 @@ public class Encuestas extends HttpServlet {
                 List<List<List<String>>> cantidadXOrdenXrespuestaXPregunta = new ArrayList<List<List<String>>>();
                 int preguntaIndex = 0;
                 for (Pregunta pregunta : preguntas) {
+                    pregunta.getRespuestaList().size();
                     List<String> resultadosAbiertaPreguntaActual = new ArrayList<String>();
                     totalr = 0;
                     List<String> cantidadRespuestasPreguntaActual = new ArrayList<String>();
@@ -159,25 +163,44 @@ public class Encuestas extends HttpServlet {
                         List<Respuesta> respuestas6 = pregunta.getRespuestaList();
 
                         for (Respuesta respuesta : respuestas6) {
-                            List<Resultados> resultados6 = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                            List<Resultados> resultados6 = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "valor", "Si");
                             cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
                             totalr += resultados6.size();
 
                         }
-                        if ("true".equals(pregunta.getOtro())) {
-                            List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
-                            cantidadRespuestasPreguntaActual6.add("" + resultados2.size());
-                            totalr += resultados2.size();
+                        /* if ("true".equals(pregunta.getOtro())) {
+                         List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
+                         cantidadRespuestasPreguntaActual6.add("" + resultados2.size());
+                         totalr += resultados2.size();
+                         }*/
+                    } else if ("7".equals(pregunta.getTipo())) {
+                        //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
+                        List<Respuesta> respuestas = pregunta.getRespuestaList();
+
+                        for (Respuesta respuesta : respuestas) {
+                            List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
+                            List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+
+                            for (int i = 0; i < respuestas.size(); i++) {
+                                List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
+                                cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                            }
+
+
+                            cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
+                            cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                            totalr += resultados.size();
+
                         }
-                    } 
-                        
-                    
+
+                    }
+
                     if (RespuestasPreguntasAbiertas.size() < preguntaIndex + 1) {
                         RespuestasPreguntasAbiertas.add(new ArrayList<String>());
                     }
-                    
-                    if (! "6".equals(pregunta.getTipo())){
-                    cantidadRespuestasPreguntaActual6.add("NA");
+
+                    if (!"6".equals(pregunta.getTipo())) {
+                        cantidadRespuestasPreguntaActual6.add("NA");
                     }
 
                     preguntaIndex++;
@@ -194,9 +217,45 @@ public class Encuestas extends HttpServlet {
                 sesion.setAttribute("cantidadXrespuestaXPregunta6", cantidadXrespuestaXPregunta6); //tipo 6
                 sesion.setAttribute("cantidadXOrdenXrespuestaXPregunta", cantidadXOrdenXrespuestaXPregunta);
                 sesion.setAttribute("RespuestasPreguntasAbiertas", RespuestasPreguntasAbiertas);
+
                 String url = "informes/informexpregunta.jsp";
+                if (para2 != null && para2.equals("g")) {
+                    url = "informes/informe.jsp";
+                }
+
+
                 RequestDispatcher rd = request.getRequestDispatcher(url);
                 rd.forward(request, response);
+
+            } else if (accion.equals("resultadosP")) {
+                response.setContentType("application/json");
+                
+                String preguntaid = (String) request.getParameter("preguntaid");
+                int indicePregunta = Integer.parseInt(preguntaid);
+                 List<List<String>> aux = (List<List<String>>)sesion.getAttribute("cantidadXrespuestaXPregunta");
+                 List<Pregunta> preg =  (List<Pregunta>)sesion.getAttribute("preguntas");
+                
+                String aux4 = "{ \"datos\":[";
+
+                try {
+                    for (int i = 0; i < preg.get(indicePregunta).getRespuestaList().size(); i++) {
+                        String aux5 = ""
+                                + "{"
+                                + "\"y\": \""+ preg.get(indicePregunta).getRespuestaList().get(i).getRespuesta().trim()+ "\" ," + " \"a\": \"" + aux.get(indicePregunta).get(i)
+                                + "\""
+                                + "},"
+                                + "";
+                        aux4 += aux5;
+
+                    }
+                    aux4 = aux4.substring(0, aux4.length() - 1);
+                    aux4 += "]}";
+
+                    out.println("[" + aux4 + "]");
+
+                } finally {
+                    out.close();
+                }
 
             } else if (accion.equals("irEncuesta")) {
                 String idencuesta = (String) request.getParameter("idencuesta");
@@ -517,7 +576,8 @@ public class Encuestas extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP
+     * <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -531,7 +591,8 @@ public class Encuestas extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP
+     * <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
