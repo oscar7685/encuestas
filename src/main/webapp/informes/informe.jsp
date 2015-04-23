@@ -89,6 +89,81 @@
                                                                     </c:when>
                                                                 </c:choose>
                                                             </div>
+                                                            <div>
+                                                                <c:choose>
+                                                                    <c:when test="${pregunta.getTipo() == '1'}">
+                                                                        <table class="table">
+                                                                            <th>Respuesta/Orden</th>
+                                                                                <c:set var="aux5" value="0"></c:set>
+                                                                                <c:set var="auxheader" value="0"></c:set>
+                                                                                <c:forEach items="${pregunta.respuestaList}" var="resf" varStatus="resStat">
+                                                                                <th>${resStat.index + 1}</th>    
+                                                                                    <c:set var="auxheader" value="${resStat.index}"></c:set>
+                                                                                </c:forEach>
+                                                                                <c:choose>
+                                                                                    <c:when test="${pregunta.otro == 'true'}">
+                                                                                    <th>${auxheader + 2}</th>        
+                                                                                    </c:when>
+                                                                                </c:choose>
+                                                                                <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="iter2">
+                                                                                <tr>
+                                                                                    <td>${respuesta.respuesta}</td>
+
+                                                                                    <c:set var="aux" value="0"></c:set>
+                                                                                    <c:forEach items="${pregunta.respuestaList}" var="otra" varStatus="otraStatus">
+                                                                                        <td> ${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(otraStatus.index)}</td>
+
+                                                                                        <c:set var="aux" value="${otraStatus.index}"></c:set>
+                                                                                    </c:forEach>    
+                                                                                    <c:choose>
+                                                                                        <c:when test="${pregunta.otro == 'true'}">
+                                                                                            <td>  ${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(aux+1)} </td>
+                                                                                        </c:when>
+                                                                                    </c:choose>   
+                                                                                </tr>           
+                                                                                <c:set var="aux5" value="${iter2.index}"></c:set>
+                                                                            </c:forEach>
+                                                                            <c:choose>
+                                                                                <c:when test="${pregunta.otro == 'true'}">
+                                                                                    <tr>
+                                                                                        <td>${pregunta.labelOtro}</td>
+                                                                                        <c:set var="aux7" value="0"></c:set>
+                                                                                        <c:forEach items="${pregunta.respuestaList}" var="otra2" varStatus="otraStatus2">
+                                                                                            <td>${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(aux5+1).get(otraStatus2.index)}</td>
+                                                                                            <c:set var="aux7" value="${otraStatus2.index}"></c:set>
+                                                                                        </c:forEach>
+                                                                                        <td>${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(aux5+1).get(aux7+1)}</td>
+                                                                                    </tr>
+                                                                                </c:when>
+                                                                            </c:choose>
+                                                                        </table>
+                                                                    </c:when>
+                                                                    <c:when test="${pregunta.getTipo() == '7'}">
+                                                                        <table class="table">
+                                                                            <thead>
+                                                                            <th>Respuesta/Orden</th>
+
+                                                                            <c:forEach items="${pregunta.respuestaList}" var="resf2" varStatus="resStat2">
+                                                                                <th>${resStat2.index + 1}</th>    
+                                                                                </c:forEach>
+                                                                                </thead>
+                                                                            <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="iter2">
+                                                                                <tbody>
+                                                                                <tr>
+                                                                                    <td>${respuesta.respuesta}</td>
+
+                                                                                <c:forEach items="${pregunta.respuestaList}" var="otra" varStatus="otraStatus">
+                                                                                    <td>${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(otraStatus.index)}</td>
+                                                                                </c:forEach>    
+                                                                                </tr>
+                                                                                </tbody>        
+                                                                            </c:forEach>
+                                                                        </table>   
+
+                                                                            <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
+                                                                        </c:when> 
+                                                                    </c:choose>
+                                                            </div>    
                                                         </div>
                                                     </div>
                                                 </div>
@@ -585,7 +660,7 @@
 
 
         <script type="text/javascript">
-            var datosTF1vsTF2, datos9, datos1;
+            var datosTF1vsTF2, datos9, datos1, datos6;
             $(function() {
             <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
                 <c:choose>
@@ -663,7 +738,32 @@
 
 
                     </c:when>
+                        
+                        <c:when test="${pregunta.getTipo() == '6'}">
+                $.ajax({
+                    type: "POST",
+                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                    dataType: 'json',
+                    success: function(dat)
+                    {
+                        datos6 = dat['0']["datos"];
+                        Morris.Bar({
+                            element: 'div${pregunta.idpregunta}',
+                            data: datos6,
+                            xkey: 'y',
+                            ykeys: ['a'],
+                            //padding: 100,
+                            labels: ['Cantidad de respuestas contestadas'],
+                            //xLabelAngle: 30,
+                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                        });
+                    } //fin success
+                }); //fin del $.ajax
 
+
+                    </c:when>
+
+                        
 
                 </c:choose>
             </c:forEach>

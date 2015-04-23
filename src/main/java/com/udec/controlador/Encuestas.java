@@ -239,19 +239,34 @@ public class Encuestas extends HttpServlet {
                 String preguntaid = (String) request.getParameter("preguntaid");
                 int indicePregunta = Integer.parseInt(preguntaid);
                 List<List<String>> aux = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta");
+                List<List<String>> aux6 = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta6");
                 List<Pregunta> preg = (List<Pregunta>) sesion.getAttribute("preguntas");
-
+                System.out.println("preguntaId: " + preguntaid);
                 String aux4 = "{ \"datos\":[";
 
                 try {
                     for (int i = 0; i < preg.get(indicePregunta).getRespuestaList().size(); i++) {
+                        if (!preg.get(indicePregunta).getTipo().equals("6")) {
+                            String aux5 = ""
+                                    + "{"
+                                    + "\"y\": \"" + preg.get(indicePregunta).getRespuestaList()
+                                    .get(i).getRespuesta().trim()
+                                    + "\" ," + " \"a\": \"" + aux.get(indicePregunta).get(i)
+                                    + "\""
+                                    + "},"
+                                    + "";
+                            aux4 += aux5;
+                        }else{
                         String aux5 = ""
-                                + "{"
-                                + "\"y\": \"" + preg.get(indicePregunta).getRespuestaList().get(i).getRespuesta().trim() + "\" ," + " \"a\": \"" + aux.get(indicePregunta).get(i)
-                                + "\""
-                                + "},"
-                                + "";
-                        aux4 += aux5;
+                                    + "{"
+                                    + "\"y\": \"" + preg.get(indicePregunta).getRespuestaList()
+                                    .get(i).getRespuesta().trim()
+                                    + "\" ," + " \"a\": \"" + aux6.get(indicePregunta).get(i)
+                                    + "\""
+                                    + "},"
+                                    + "";
+                            aux4 += aux5;
+                        }
 
                     }
                     aux4 = aux4.substring(0, aux4.length() - 1);
