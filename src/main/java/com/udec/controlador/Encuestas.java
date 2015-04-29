@@ -224,6 +224,8 @@ public class Encuestas extends HttpServlet {
                 sesion.setAttribute("cantidadXrespuestaXPregunta6", cantidadXrespuestaXPregunta6); //tipo 6
                 sesion.setAttribute("cantidadXOrdenXrespuestaXPregunta", cantidadXOrdenXrespuestaXPregunta);
                 sesion.setAttribute("RespuestasPreguntasAbiertas", RespuestasPreguntasAbiertas);
+                sesion.setAttribute("fuente", para);
+                sesion.setAttribute("facultades", facultadFacade.findAll());
 
                 String url = "informes/informexpregunta.jsp";
                 if (para2 != null && para2.equals("g")) {
@@ -241,7 +243,7 @@ public class Encuestas extends HttpServlet {
                 List<List<String>> aux = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta");
                 List<List<String>> aux6 = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta6");
                 List<Pregunta> preg = (List<Pregunta>) sesion.getAttribute("preguntas");
-                System.out.println("preguntaId: " + preguntaid);
+               
                 String aux4 = "{ \"datos\":[";
 
                 try {

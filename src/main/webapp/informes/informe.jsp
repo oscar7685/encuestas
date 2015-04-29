@@ -55,7 +55,44 @@
             <div class="yamm navbar-left navbar-collapse collapse in">
                 <ul class="nav navbar-nav">
                     <li><a href="<%=request.getContextPath()%>/"><strong>Inicio</strong></a></li>
+
+                    <c:choose>
+                        <c:when test="${fuente == '1'}">
+                            <li>
+                                <select class="form-control" style="margin-top: 10px" id="facultad">
+                                    <option value="NA">Seleccione una facultad...</option>
+                                    <c:forEach items="${facultades}" var="facultad" varStatus="fac">
+                                        <option value="${facultad.idfacultad}">${facultad.facultad}</option>
+                                    </c:forEach>    
+
+                                </select>
+                            </li>
+                            <li>
+                                <select class="form-control" style="margin-top: 10px" id="programa">
+                                    <option value="NA">Seleccione un programa...</option>
+                                </select>
+                            </li>
+                            <li>
+                                <select id="semestre" class="form-control" name="semestre" style="margin-top: 10px">
+                                    <option value="">Seleccione un semestre...</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </li>
+
+                        </c:when>
+
+                    </c:choose>
                 </ul>
+
             </div>
 
 
@@ -146,23 +183,23 @@
                                                                             <c:forEach items="${pregunta.respuestaList}" var="resf2" varStatus="resStat2">
                                                                                 <th>${resStat2.index + 1}</th>    
                                                                                 </c:forEach>
-                                                                                </thead>
+                                                                            </thead>
                                                                             <c:forEach items="${pregunta.respuestaList}" var="respuesta" varStatus="iter2">
                                                                                 <tbody>
-                                                                                <tr>
-                                                                                    <td>${respuesta.respuesta}</td>
+                                                                                    <tr>
+                                                                                        <td>${respuesta.respuesta}</td>
 
-                                                                                <c:forEach items="${pregunta.respuestaList}" var="otra" varStatus="otraStatus">
-                                                                                    <td>${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(otraStatus.index)}</td>
-                                                                                </c:forEach>    
-                                                                                </tr>
+                                                                                        <c:forEach items="${pregunta.respuestaList}" var="otra" varStatus="otraStatus">
+                                                                                            <td>${cantidadXOrdenXrespuestaXPregunta.get(iter.index).get(iter2.index).get(otraStatus.index)}</td>
+                                                                                        </c:forEach>    
+                                                                                    </tr>
                                                                                 </tbody>        
                                                                             </c:forEach>
                                                                         </table>   
 
-                                                                            <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
-                                                                        </c:when> 
-                                                                    </c:choose>
+                                                                        <%--  total Respuestas: ${totalrespuestas.get(iter.index)} <br/>--%>
+                                                                    </c:when> 
+                                                                </c:choose>
                                                             </div>    
                                                         </div>
                                                     </div>
@@ -662,6 +699,31 @@
         <script type="text/javascript">
             var datosTF1vsTF2, datos9, datos1, datos6;
             $(function() {
+
+                $("#facultad").change(function() {
+                    $.ajax({
+                        type: 'POST',
+                        url: "Encuestas?accion=selectorProgramas",
+                        data: "facultad=" + $('#facultad :selected').val(),
+                        dataType: "json",
+                        success: function(datos) {
+                            $("#programa").empty();
+                            $("#programa").append("<option value='NA'>Seleccione un programa...</option>");
+                            $.each(datos.programas, function(posicion, programa) {
+                                $("#programa").append("<option value='" +
+                                        programa.id + "'>" + programa.programa + "</option>");
+                            });
+                        },//fin success
+                        error: function(datos) {
+                            $("#programa").empty();
+                            $("#programa").append("<option value='NA'>Seleccione un programa...</option>");
+                        }
+                        
+                    }); //fin $.ajax
+                    location.reload();
+                });
+
+
             <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
                 <c:choose>
                     <c:when test="${pregunta.getTipo() == '0'}">
@@ -738,8 +800,8 @@
 
 
                     </c:when>
-                        
-                        <c:when test="${pregunta.getTipo() == '6'}">
+
+                    <c:when test="${pregunta.getTipo() == '6'}">
                 $.ajax({
                     type: "POST",
                     url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
@@ -763,7 +825,7 @@
 
                     </c:when>
 
-                        
+
 
                 </c:choose>
             </c:forEach>
