@@ -18,6 +18,10 @@
             .morris-hover.morris-default-style{border-radius:10px;padding:6px;color:#666;background:rgba(255, 255, 255, 0.8);border:solid 2px rgba(230, 230, 230, 0.8);font-family:sans-serif;font-size:12px;text-align:center;}
             .morris-hover.morris-default-style .morris-hover-row-label{font-weight:bold;margin:0.25em 0;}
             .morris-hover.morris-default-style .morris-hover-point{white-space:nowrap;margin:0.1em 0;} 
+            #loader-img{
+                margin: 0 auto;
+                display: block;
+            }
         </style>
         <!--[if lt IE 10]>
             <script src="assets/js/media.match.min.js"></script>
@@ -28,7 +32,7 @@
         <link href="assets/css/styles.css" type="text/css" rel="stylesheet">                                     <!-- Core CSS with all styles -->
 
         <!-- <link href="assets/plugins/jstree/dist/themes/avalon/style.min.css" type="text/css" rel="stylesheet">    <!-- jsTree -->
-        <link href="assets/plugins/codeprettifier/prettify.css" type="text/css" rel="stylesheet">                <!-- Code Prettifier -->
+        <!--<link href="assets/plugins/codeprettifier/prettify.css" type="text/css" rel="stylesheet">                <!-- Code Prettifier -->
         <!-- <link href="assets/plugins/iCheck/skins/minimal/blue.css" type="text/css" rel="stylesheet">              <!-- iCheck -->
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries. Placeholdr.js enables the placeholder attribute -->
@@ -40,24 +44,20 @@
         <![endif]-->
         <!-- The following CSS are included as plugins and can be removed if unused-->
 
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script> 
+
     </head>
 
     <body class="infobar-offcanvas">
 
         <header id="topnav" class="navbar navbar-default navbar-fixed-top clearfix" role="banner">
-
-
-            <a id="leftmenu-trigger" class="" data-toggle="tooltip" data-placement="right" title="Toggle Sidebar"></a>
-            <a class="navbar-brand" href="index.html">Avalon</a>
-            <a id="rightmenu-trigger" class="" data-toggle="tooltip" data-placement="left" title="Toggle Infobar"></a>
-
-
             <div class="yamm navbar-left navbar-collapse collapse in">
                 <ul class="nav navbar-nav">
                     <li><a href="<%=request.getContextPath()%>/"><strong>Inicio</strong></a></li>
 
                     <c:choose>
-                        <c:when test="${fuente == '1'}">
+                        <c:when test="${fuente == '2'}">
                             <li>
                                 <select class="form-control" style="margin-top: 10px" id="facultad">
                                     <option value="NA">Seleccione una facultad...</option>
@@ -74,7 +74,7 @@
                             </li>
                             <li>
                                 <select id="semestre" class="form-control" name="semestre" style="margin-top: 10px">
-                                    <option value="">Seleccione un semestre...</option>
+                                    <option value="NA">Seleccione un semestre...</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -227,609 +227,194 @@
                     </footer>
                 </div>
             </div>
+
+
+
+            <!--<script src="assets/js/jquery-1.10.2.min.js"></script> 							<!-- Load jQuery -->
+            <!--<script src="assets/js/jqueryui-1.9.2.min.js"></script> 							<!-- Load jQueryUI -->
+            <script src="<%=request.getContextPath()%>/assets/js/bootstrap.min.js"></script> 				<!-- Load Bootstrap -->
+            <!-- End loading page level scripts-->
+           <!-- <script src="<%=request.getContextPath()%>/assets/plugins/sparklines/jquery.sparklines.min.js"></script>  	<!-- Sparkline -->
+            <script src="<%=request.getContextPath()%>/assets/js/application2.js"></script>
+            <script src="<%=request.getContextPath()%>/assets/js/raphael.min.js"></script> <!-- Load Raphael as Dependency -->
+            <script src="<%=request.getContextPath()%>/assets/js/morris.min.js"></script>  <!-- Load Morris.js -->
+
+
+            <script type="text/javascript">
+                var datosTF1vsTF2, datos9, datos1, datos6;
+                $(function() {
+                <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
+                    <c:choose>
+                        <c:when test="${pregunta.getTipo() == '0'}">
+                    $.ajax({
+                        type: "POST",
+                        url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                        dataType: 'json',
+                        success: function(dat)
+                        {
+                            datosTF1vsTF2 = dat['0']["datos"];
+                            Morris.Bar({
+                                element: 'div${pregunta.idpregunta}',
+                                data: datosTF1vsTF2,
+                                hoverCallback: function(index, options, content) {
+                                    return(content);
+                                },
+                                xkey: 'y',
+                                ykeys: ['a'],
+                                labels: ['Cantidad de respuestas contestadas'],
+                                //xLabelAngle: 30,
+                                //padding: 100,
+                                lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                            });
+                        } //fin success
+                    }); //fin del $.ajax
+
+
+                        </c:when>
+                        <c:when test="${pregunta.getTipo() == '9'}">
+                    $.ajax({
+                        type: "POST",
+                        url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                        dataType: 'json',
+                        success: function(dat)
+                        {
+                            datos9 = dat['0']["datos"];
+                            Morris.Bar({
+                                element: 'div${pregunta.idpregunta}',
+                                data: datos9,
+                                xkey: 'y',
+                                ykeys: ['a'],
+                                labels: ['Cantidad de respuestas contestadas'],
+                                //xLabelAngle: 30,
+                                //padding: 100,
+                                lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                            });
+                        } //fin success
+                    }); //fin del $.ajax
+
+
+                        </c:when>
+
+
+                        <c:when test="${pregunta.getTipo() == '1'}">
+                    $.ajax({
+                        type: "POST",
+                        url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                        dataType: 'json',
+                        success: function(dat)
+                        {
+                            datos1 = dat['0']["datos"];
+                            Morris.Bar({
+                                element: 'div${pregunta.idpregunta}',
+                                data: datos1,
+                                xkey: 'y',
+                                ykeys: ['a'],
+                                //padding: 100,
+                                labels: ['Cantidad de respuestas contestadas'],
+                                //xLabelAngle: 30,
+                                lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                            });
+                        } //fin success
+                    }); //fin del $.ajax
+
+
+                        </c:when>
+
+                        <c:when test="${pregunta.getTipo() == '6'}">
+                    $.ajax({
+                        type: "POST",
+                        url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
+                        dataType: 'json',
+                        success: function(dat)
+                        {
+                            datos6 = dat['0']["datos"];
+                            Morris.Bar({
+                                element: 'div${pregunta.idpregunta}',
+                                data: datos6,
+                                xkey: 'y',
+                                ykeys: ['a'],
+                                //padding: 100,
+                                labels: ['Cantidad de respuestas contestadas'],
+                                //xLabelAngle: 30,
+                                lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
+                            });
+                        } //fin success
+                    }); //fin del $.ajax
+
+
+                        </c:when>
+
+
+
+                    </c:choose>
+                </c:forEach>
+                });
+            </script>
         </div>
 
-
-        <div class="infobar-wrapper">
-            <div class="infobar">
-
-                <div class="infobar-options">
-                    <h2>Infobar</h2>
-                </div>
-
-                <div id="widgetarea">
-
-
-                    <div class="widget" id="widget-sparkline">
-                        <div class="widget-heading">
-                            <a href="javascript:;" data-toggle="collapse" data-target="#sparklinestats"><h4>Sparkline Stats</h4></a>
-                        </div>
-                        <div class="widget-body collapse in" id="sparklinestats">
-                            <ul class="sparklinestats">
-                                <li>
-                                    <div class="pull-left">
-                                        <h5 class="title">Total Revenue</h5>
-                                        <h3>$241,750 <span class="badge badge-success">+13.6%</span></h3>
-                                    </div>
-                                    <div class="pull-right">
-                                        <div class="sparkline" id="infobar-revenuestats"></div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="pull-left">
-                                        <h5 class="title">Products Sold</h5>
-                                        <h3>11,562 <span class="badge badge-success">+19.2%</span></h3>
-                                    </div>
-                                    <div class="pull-right">
-                                        <div class="sparkline" id="infobar-unitssold"></div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="pull-left">
-                                        <h5 class="title">Total Orders</h5>
-                                        <h3>1,249 <span class="badge badge-danger">-10.5%</span></h3>
-                                    </div>
-                                    <div class="pull-right">
-                                        <div class="sparkline" id="infobar-orders"></div>
-                                    </div>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="widget" id="widget-weather">
-                        <div class="widget-heading">
-                            <a href="javascript:;" data-toggle="collapse" data-target="#weatherwidget"><h4>Weather</h4></a>
-                        </div>
-                        <div class="widget-body collapse in" id="weatherwidget">
-                            <div class="weather-container">
-                                <div class="weather-widget"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="widget">
-                        <div class="widget-heading">
-                            <a href="javascript:;" data-toggle="collapse" data-target="#recentactivity"><h4>Recent Activity</h4></a>
-                        </div>
-                        <div class="widget-body collapse in" id="recentactivity">
-                            <ul class="recent-activities">
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_11.png" class="img-responsive img-circle">
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Jean Alanis</a> invited 3 unconfirmed members to <a href="#">Sed ut perspiciatis unde</a></span>
-                                        <span class="time">Sep 16, 2014 at 10:06 AM</span>
-
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="activityicon activity-success">
-                                        <i class="fa fa-cloud"></i>
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Stacy Villani</a> and <a href="#" class="person">Leroy Greenlee</a> added new files to <a href="#">Dicta sunt explicabo</a></span>
-                                        <span class="time">Sep 12, 2014 at 11:06 PM</span>
-
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_07.png" class="img-responsive img-circle">
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Shannon Schmucker</a> is now following <a href="#" class="person">Anthony Ware</a></span>
-                                        <span class="time">Sep 06, 2014 at 1:46 AM</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_01.png" class="img-responsive img-circle">
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Roxann Hollingworth</a> commented on <a href="#">Natus error sit voluptatem</a></span>
-                                        <span class="time">Sep 02, 2014 at 7:50 PM</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_04.png" class="img-responsive img-circle">
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Mitchell Kosak</a> added <a href="#" class="person">Bruce Ory</a> to <a href="#">Accusantium doloremque laudantium</a></span>
-                                        <span class="time">Sep 02, 2014 at 8:35 AM</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="activityicon activity-inverse">
-                                        <i class="fa fa-user"></i>
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#">4 new users</a> requested to join group</span>
-                                        <span class="time">Aug 29, 2014 at 05:34 PM</span>
-
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_09.png" class="img-responsive img-circle">
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Rodney Moody</a> created new thread <a href="#">Vero eos et accusamus</a></span>
-                                        <span class="time">Aug 13, 2014 at 1:23 PM</span>
-
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="activityicon activity-info">
-                                        <i class="fa fa-comment-o"></i>
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg">Anonymous user commented on <a href="#">Totam rem aperiam</a></span>
-                                        <span class="time">Aug 11, 2014 at 12:01 PM</span>
-
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_05.png" class="img-responsive img-circle">
-                                    </div>
-                                    <div class="content">
-                                        <span class="msg"><a href="#" class="person">Pricilla Panella</a> is now following <a href="#" class="person">Ricky Marengo</a></span>
-                                        <span class="time">Jul 25, 2014 at 3:11 PM</span>
-                                    </div>
-                                </li>
-                                <li class="seeall">
-                                    <a href="#" class="pull-right">See all activities</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-
-
-                    <!-- <div class="widget">
-                        <div class="widget-heading">
-                            <a href="javascript:;" data-toggle="collapse" data-target="#storagespace"><h4>Storage Space</h4></a>
-                        </div>
-                        <div class="widget-body collapse in" id="storagespace">
-                            <div class="" style="padding: 20px 0">
-                                <div class="clearfix">
-                                    <div class="progress-title pull-left">1.31 GB used</div>
-                                    <div class="progress-percentage pull-right">87.3%</div>
-                                </div>
-                                <div class="progress progress-lg">
-                                    <div class="progress-bar progress-bar-success" style="width: 50%"></div>
-                                    <div class="progress-bar progress-bar-warning" style="width: 25%"></div>
-                                    <div class="progress-bar progress-bar-danger" style="width: 12.3%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
-                    <!-- <div class="widget">
-                        <div class="widget-heading">
-                            <a href="javascript:;" data-toggle="collapse" data-target="#contactdetails"><h4>Contact Details</h4></a>
-                        </div>
-                        <div class="widget-body collapse in" id="contactdetails">
-                            <div class="contactdetails">
-                                <div class="avatar">
-                                    <img src="assets/demo/avatar/avatar_11.png" class="img-responsive img-circle">
-                                </div>
-                                <span class="contact-name">Joseph Vasquez</span>
-                                <span class="contact-status">Client Representative</span>
-                                <ul class="details">
-                                    
-                                    <li><a href="#"><i class="fa fa-fw fa-envelope-o"></i>&nbsp;p.bateman@gmail.com</a></li>
-                                    <li><i class="fa fa-fw fa-phone"></i>&nbsp;+1 234 567 890</li>
-                                    <li><i class="fa fa-fw fa-map-marker"></i>&nbsp;Hollywood Hills, California</li>
-                                    
-                                </ul>
-            
-                        </div>
-                    </div> -->
-
-
-                    <!-- <div class="widget">
-                        <div class="widget-heading">
-                            <a href="javascript:;" data-toggle="collapse" data-target="#contact-list"><h4>Contact List</h4></a>
-                        </div>
-                        <div class="widget-body collapse in" id="contact-list">
-                            <ul class="contact-list">
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_06.png" class="img-responsive img-circle" />
-                                    </div>
-                                    <div class="details">
-                                        <div class="clearfix">
-                                            <a href="#" class="contact-name pull-left">Jessie Pinkman</a>
-                                            
-                                                <div class="contact-profiles">
-                                                    <a href="javascript:;" class="dropdown-toggle profile-list" data-toggle="dropdown">
-                                                        <i class="fa fa-ellipsis-h"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#"><i class="fa pull-right fa-envelope-o" style="color: #cccccc;"></i>Email</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-skype" style="color: #12a5f4;"></i>Skype</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-twitter" style="color: #00aced;"></i>Twitter</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-linkedin" style="color: #007bb6;"></i>LinkedIn</a></li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            
-                                        </div>
-                                        <span class="contact-details">Senior Developer</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_01.png" class="img-responsive img-circle" />
-                                    </div>
-                                    <div class="details">
-                                        <div class="clearfix">
-                                            <a href="#" class="contact-name pull-left">Emma Watson</a>
-                                            
-                                                <div class="contact-profiles">
-                                                    <a href="javascript:;" class="dropdown-toggle profile-list" data-toggle="dropdown">
-                                                        <i class="fa fa-ellipsis-h"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#"><i class="fa pull-right fa-envelope-o" style="color: #cccccc;"></i>Email</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-skype" style="color: #12a5f4;"></i>Skype</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-twitter" style="color: #00aced;"></i>Twitter</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-linkedin" style="color: #007bb6;"></i>LinkedIn</a></li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            
-                                        </div>
-                                        <span class="contact-details">Graphic Designer</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_09.png" class="img-responsive img-circle" />
-                                    </div>
-                                    <div class="details">
-                                        <div class="clearfix">
-                                            <a href="#" class="contact-name pull-left">David Luke</a>
-                                            
-                                                <div class="contact-profiles">
-                                                    <a href="javascript:;" class="dropdown-toggle profile-list" data-toggle="dropdown">
-                                                        <i class="fa fa-ellipsis-h"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#"><i class="fa pull-right fa-envelope-o" style="color: #cccccc;"></i>Email</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-skype" style="color: #12a5f4;"></i>Skype</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-twitter" style="color: #00aced;"></i>Twitter</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-linkedin" style="color: #007bb6;"></i>LinkedIn</a></li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            
-                                        </div>
-                                        <span class="contact-details">Client Representative</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_11.png" class="img-responsive img-circle" />
-                                    </div>
-                                    <div class="details">
-                                        <div class="clearfix">
-                                            <a href="#" class="contact-name pull-left">John Arren</a>
-                                            
-                                                <div class="contact-profiles">
-                                                    <a href="javascript:;" class="dropdown-toggle profile-list" data-toggle="dropdown">
-                                                        <i class="fa fa-ellipsis-h"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#"><i class="fa pull-right fa-envelope-o" style="color: #cccccc;"></i>Email</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-skype" style="color: #12a5f4;"></i>Skype</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-twitter" style="color: #00aced;"></i>Twitter</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-linkedin" style="color: #007bb6;"></i>LinkedIn</a></li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            
-                                        </div>
-                                        <span class="contact-details">Project Manager</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_05.png" class="img-responsive img-circle" />
-                                    </div>
-                                    <div class="details">
-                                        <div class="clearfix">
-                                            <a href="#" class="contact-name pull-left">Ben Stiller</a>
-                                            
-                                                <div class="contact-profiles">
-                                                    <a href="javascript:;" class="dropdown-toggle profile-list" data-toggle="dropdown">
-                                                        <i class="fa fa-ellipsis-h"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#"><i class="fa pull-right fa-envelope-o" style="color: #cccccc;"></i>Email</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-skype" style="color: #12a5f4;"></i>Skype</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-twitter" style="color: #00aced;"></i>Twitter</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-linkedin" style="color: #007bb6;"></i>LinkedIn</a></li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            
-                                        </div>
-                                        <span class="contact-details">Senior Designer</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="avatar">
-                                        <img src="assets/demo/avatar/avatar_08.png" class="img-responsive img-circle" />
-                                    </div>
-                                    <div class="details">
-                                        <div class="clearfix">
-                                            <a href="#" class="contact-name pull-left">Jeofry Thompson</a>
-                                            
-                                                <div class="contact-profiles">
-                                                    <a href="javascript:;" class="dropdown-toggle profile-list" data-toggle="dropdown">
-                                                        <i class="fa fa-ellipsis-h"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li><a href="#"><i class="fa pull-right fa-envelope-o" style="color: #cccccc;"></i>Email</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-skype" style="color: #12a5f4;"></i>Skype</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-twitter" style="color: #00aced;"></i>Twitter</a></li>
-                                                        <li><a href="#"><i class="fa pull-right fa-linkedin" style="color: #007bb6;"></i>LinkedIn</a></li>
-                                                    </ul>
-                                                </div>
-                                                
-                                            
-                                        </div>
-                                        <span class="contact-details">Developer</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div> -->
-
-
-
-
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- Switcher -->
-        <div class="demo-options">
-            <div class="demo-options-icon"><i class="fa fa-spin fa-fw fa-smile-o"></i></div>
-            <div class="demo-heading">Demo Settings</div>
-
-            <div class="demo-body">
-                <div class="tabular">
-                    <div class="tabular-row">
-                        <div class="tabular-cell">Fixed Header</div>
-                        <div class="tabular-cell demo-switches"><input class="bootstrap-switch" type="checkbox" checked data-size="mini" data-on-color="success" data-off-color="default" name="demo-fixedheader" data-on-text="I" data-off-text="O"></div>
-                    </div>
-                    <div class="tabular-row">
-                        <div class="tabular-cell">Boxed Layout</div>
-                        <div class="tabular-cell demo-switches"><input class="bootstrap-switch" type="checkbox" data-size="mini" data-on-color="success" data-off-color="default" name="demo-boxedlayout" data-on-text="I" data-off-text="O"></div>
-                    </div>
-                    <div class="tabular-row">
-                        <div class="tabular-cell">Collapse Leftbar</div>
-                        <div class="tabular-cell demo-switches"><input class="bootstrap-switch" type="checkbox" data-size="mini" data-on-color="success" data-off-color="default" name="demo-collapseleftbar" data-on-text="I" data-off-text="O"></div>
-                    </div>
-                    <div class="tabular-row">
-                        <div class="tabular-cell">Collapse Rightbar</div>
-                        <div class="tabular-cell demo-switches"><input class="bootstrap-switch" type="checkbox" checked data-size="mini" data-on-color="success" data-off-color="default" name="demo-collapserightbar" data-on-text="I" data-off-text="O"></div>
-                    </div>
-                    <div class="tabular-row hide" id="demo-horizicon">
-                        <div class="tabular-cell">Horizontal Icons</div>
-                        <div class="tabular-cell demo-switches"><input class="bootstrap-switch" type="checkbox" checked data-size="mini" data-on-color="primary" data-off-color="warning" data-on-text="S" data-off-text="L" name="demo-horizicons" ></div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="demo-body">
-                <div class="option-title">Header Colors</div>
-                <ul id="demo-header-color" class="demo-color-list">
-                    <li><span class="demo-white"></span></li>
-                    <li><span class="demo-black"></span></li>
-                    <li><span class="demo-midnightblue"></span></li>
-                    <li><span class="demo-primary"></span></li>
-                    <li><span class="demo-info"></span></li>
-                    <li><span class="demo-alizarin"></span></li>
-                    <li><span class="demo-grape"></span></li>
-                    <li><span class="demo-violet"></span></li>                
-                    <li><span class="demo-indigo"></span></li> 
-                </ul>
-            </div>
-
-            <div class="demo-body">
-                <div class="option-title">Sidebar Colors</div>
-                <ul id="demo-sidebar-color" class="demo-color-list">
-                    <li><span class="demo-white"></span></li>
-                    <li><span class="demo-black"></span></li>
-                    <li><span class="demo-midnightblue"></span></li>
-                    <li><span class="demo-primary"></span></li>
-                    <li><span class="demo-info"></span></li>
-                    <li><span class="demo-alizarin"></span></li>
-                    <li><span class="demo-grape"></span></li>
-                    <li><span class="demo-violet"></span></li>                
-                    <li><span class="demo-indigo"></span></li> 
-                </ul>
-            </div>
-
-            <div class="demo-body hide" id="demo-boxes">
-                <div class="option-title">Boxed Layout Options</div>
-                <ul id="demo-boxed-bg" class="demo-color-list">
-                    <li><span class="pattern-brickwall"></span></li>
-                    <li><span class="pattern-dark-stripes"></span></li>
-                    <li><span class="pattern-rockywall"></span></li>
-                    <li><span class="pattern-subtle-carbon"></span></li>
-                    <li><span class="pattern-tweed"></span></li>
-                    <li><span class="pattern-vertical-cloth"></span></li>
-                    <li><span class="pattern-grey_wash_wall"></span></li>
-                    <li><span class="pattern-pw_maze_black"></span></li>
-                    <li><span class="patther-wild_oliva"></span></li>
-                    <li><span class="pattern-stressed_linen"></span></li>
-                    <li><span class="pattern-sos"></span></li>
-                </ul>
-            </div>
-
-        </div>
-        <!-- /Switcher -->
         <!-- Load site level scripts -->
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script> 
-
-        <!--<script src="assets/js/jquery-1.10.2.min.js"></script> 							<!-- Load jQuery -->
-        <!--<script src="assets/js/jqueryui-1.9.2.min.js"></script> 							<!-- Load jQueryUI -->
-        <script src="<%=request.getContextPath()%>/assets/js/bootstrap.min.js"></script> 				<!-- Load Bootstrap -->
-        <!-- End loading page level scripts-->
-       <!-- <script src="<%=request.getContextPath()%>/assets/plugins/sparklines/jquery.sparklines.min.js"></script>  	<!-- Sparkline -->
-        <script src="<%=request.getContextPath()%>/assets/js/application2.js"></script>
-        <script src="<%=request.getContextPath()%>/assets/js/raphael.min.js"></script> <!-- Load Raphael as Dependency -->
-        <script src="<%=request.getContextPath()%>/assets/js/morris.min.js"></script>  <!-- Load Morris.js -->
-
-
-        <script type="text/javascript">
-            var datosTF1vsTF2, datos9, datos1, datos6;
-            $(function() {
-
-                $("#facultad").change(function() {
-                    $.ajax({
-                        type: 'POST',
-                        url: "Encuestas?accion=selectorProgramas",
-                        data: "facultad=" + $('#facultad :selected').val(),
-                        dataType: "json",
-                        success: function(datos) {
-                            $("#programa").empty();
-                            $("#programa").append("<option value='NA'>Seleccione un programa...</option>");
-                            $.each(datos.programas, function(posicion, programa) {
-                                $("#programa").append("<option value='" +
-                                        programa.id + "'>" + programa.programa + "</option>");
-                            });
-                        },//fin success
-                        error: function(datos) {
-                            $("#programa").empty();
-                            $("#programa").append("<option value='NA'>Seleccione un programa...</option>");
-                        }
-                        
-                    }); //fin $.ajax
-                    location.reload();
-                });
-
-
-            <c:forEach items="${preguntas}" var="pregunta" varStatus="iter">
-                <c:choose>
-                    <c:when test="${pregunta.getTipo() == '0'}">
-                $.ajax({
-                    type: "POST",
-                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
-                    dataType: 'json',
-                    success: function(dat)
-                    {
-                        datosTF1vsTF2 = dat['0']["datos"];
-                        Morris.Bar({
-                            element: 'div${pregunta.idpregunta}',
-                            data: datosTF1vsTF2,
-                            hoverCallback: function(index, options, content) {
-                                return(content);
-                            },
-                            xkey: 'y',
-                            ykeys: ['a'],
-                            labels: ['Cantidad de respuestas contestadas'],
-                            //xLabelAngle: 30,
-                            //padding: 100,
-                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
-                        });
-                    } //fin success
-                }); //fin del $.ajax
-
-
-                    </c:when>
-                    <c:when test="${pregunta.getTipo() == '9'}">
-                $.ajax({
-                    type: "POST",
-                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
-                    dataType: 'json',
-                    success: function(dat)
-                    {
-                        datos9 = dat['0']["datos"];
-                        Morris.Bar({
-                            element: 'div${pregunta.idpregunta}',
-                            data: datos9,
-                            xkey: 'y',
-                            ykeys: ['a'],
-                            labels: ['Cantidad de respuestas contestadas'],
-                            //xLabelAngle: 30,
-                            //padding: 100,
-                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
-                        });
-                    } //fin success
-                }); //fin del $.ajax
-
-
-                    </c:when>
-
-
-                    <c:when test="${pregunta.getTipo() == '1'}">
-                $.ajax({
-                    type: "POST",
-                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
-                    dataType: 'json',
-                    success: function(dat)
-                    {
-                        datos1 = dat['0']["datos"];
-                        Morris.Bar({
-                            element: 'div${pregunta.idpregunta}',
-                            data: datos1,
-                            xkey: 'y',
-                            ykeys: ['a'],
-                            //padding: 100,
-                            labels: ['Cantidad de respuestas contestadas'],
-                            //xLabelAngle: 30,
-                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
-                        });
-                    } //fin success
-                }); //fin del $.ajax
-
-
-                    </c:when>
-
-                    <c:when test="${pregunta.getTipo() == '6'}">
-                $.ajax({
-                    type: "POST",
-                    url: 'Encuestas?accion=resultadosP&preguntaid=${iter.index}',
-                    dataType: 'json',
-                    success: function(dat)
-                    {
-                        datos6 = dat['0']["datos"];
-                        Morris.Bar({
-                            element: 'div${pregunta.idpregunta}',
-                            data: datos6,
-                            xkey: 'y',
-                            ykeys: ['a'],
-                            //padding: 100,
-                            labels: ['Cantidad de respuestas contestadas'],
-                            //xLabelAngle: 30,
-                            lineColors: [Utility.getBrandColor('inverse'), Utility.getBrandColor('midnightblue')]
-                        });
-                    } //fin success
-                }); //fin del $.ajax
-
-
-                    </c:when>
-
-
-
-                </c:choose>
-            </c:forEach>
-            });
-        </script>
     </body>
 </html>
+<script type="text/javascript">
+    $(function() {
+        $("#facultad").change(function() {
+            $.ajax({
+                type: 'POST',
+                url: "Encuestas?accion=selectorProgramas",
+                data: "facultad=" + $('#facultad :selected').val(),
+                dataType: "json",
+                success: function(datos) {
+                    $("#programa").empty();
+                    $("#programa").append("<option value='NA'>Seleccione un programa...</option>");
+                    $.each(datos.programas, function(posicion, programa) {
+                        $("#programa").append("<option value='" +
+                                programa.id + "'>" + programa.programa + "</option>");
+                    });
+
+                    $("#wrapper").empty();
+                    $('#wrapper').html('<img id="loader-img" alt="" src="assets/img/loader-larger.gif" width="100" height="100" align="center" />');
+                    $.ajax({
+                        type: 'POST',
+                        url: "Encuestas?accion=informeXpregunta",
+                        data: "facultad=" + $('#facultad :selected').val() + "&programa=" + $('#programa :selected').val() + "&semestre=" + $('#semestre :selected').val() + "&para=2&para2=ajax",
+                        success: function(datos) {
+                            $("#wrapper").html(datos);
+                        }, //fin success
+                        error: function(datos) {
+                            $("#wrapper").empty();
+                            $("#wrapper").append(datos);
+                        }
+
+                    }); //fin $.ajax
+
+                }, //fin success
+                error: function(datos) {
+                    $("#programa").empty();
+                    $("#programa").append("<option value='NA'>Seleccione un programa...</option>");
+                }
+
+            }); //fin $.ajax
+        });
+
+        $("#programa").change(function() {
+            $("#wrapper").empty();
+            $('#wrapper').html('<img id="loader-img" alt="" src="assets/img/loader-larger.gif" width="100" height="100" align="center" />');
+            $.ajax({
+                type: 'POST',
+                url: "Encuestas?accion=informeXpregunta",
+                data: "facultad=" + $('#facultad :selected').val() + "&programa=" + $('#programa :selected').val() + "&semestre=" + $('#semestre :selected').val() + "&para=2&para2=ajax",
+                success: function(datos) {
+                    $("#wrapper").html(datos);
+                }, //fin success
+                error: function(datos) {
+                    $("#wrapper").empty();
+                    $("#wrapper").append(datos);
+                }
+
+            }); //fin $.ajax
+
+        }); //fin changeprograma
+
+    });
+</script>

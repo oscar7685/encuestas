@@ -75,6 +75,19 @@ public class Encuestas extends HttpServlet {
             if (accion.equals("informeXpregunta")) {
                 String para = (String) request.getParameter("para");
                 String para2 = (String) request.getParameter("para2");
+                String facultad = (String) request.getParameter("facultad");
+                Facultad fac = null;
+                if (facultad != null && !facultad.equals("NA")) {
+                    fac = facultadFacade.find(Integer.parseInt(facultad));
+                }
+
+                String programa = (String) request.getParameter("programa");
+                Programa prog = null;
+                if (programa != null && !programa.equals("NA")) {
+                    prog = programaFacade.find(Integer.parseInt(programa));
+                }
+
+                String semestre = (String) request.getParameter("semestre");
                 int num = Integer.parseInt(para);
                 int totalr = 0;
                 Encuesta e = encuestaFacade.find(num);
@@ -99,14 +112,41 @@ public class Encuestas extends HttpServlet {
                         //Preguntas tipo 0  seleccion multiple unica respuesta
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
                         for (Respuesta respuesta : respuestas) {
-                            List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
-                            cantidadRespuestasPreguntaActual.add("" + resultados.size());
-                            totalr += resultados.size();
+                            if (!para2.equals("ajax")) {
+                                List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                                cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                totalr += resultados.size();
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                    List<Resultados> resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                    cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                    totalr += resultados.size();
+                                } else {
+                                    if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                        List<Resultados> resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma", prog);
+                                        cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                        totalr += resultados.size();
+                                    }
+                                }
+                            }
+
                         }
                         if ("true".equals(pregunta.getOtro())) {
-                            List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
-                            cantidadRespuestasPreguntaActual.add("" + resultados2.size());
-                            totalr += resultados2.size();
+                            if (!para2.equals("ajax")) {
+                                List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
+                                cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                                totalr += resultados2.size();
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                    List<Resultados> resultados2 = resultadosFacade.findByList2EspecialParametro1("preguntaIdpregunta", pregunta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                    cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                                    totalr += resultados2.size();
+                                } else {
+                                    List<Resultados> resultados2 = resultadosFacade.findByList2EspecialParametro1("preguntaIdpregunta", pregunta, "personaIdpersona.programaIdprograma", prog);
+                                    cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                                    totalr += resultados2.size();
+                                }
+                            }
                         }
 
                     } else if ("1".equals(pregunta.getTipo())) {
@@ -115,18 +155,61 @@ public class Encuestas extends HttpServlet {
 
                         for (Respuesta respuesta : respuestas) {
                             List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
-                            List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                            List<Resultados> resultados = null;
+                            if (!para2.equals("ajax")) {
+                                resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                    resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                } else {
+                                    if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                        resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma", prog);
+                                    }
+                                }
+                            }
 
                             if ("true".equals(pregunta.getOtro())) {
-                                for (int i = 0; i <= respuestas.size(); i++) {
-                                    List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
-                                    cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                if (!para2.equals("ajax")) {
+                                    for (int i = 0; i <= respuestas.size(); i++) {
+                                        List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
+                                        cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                    }
+                                } else {
+                                    if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                        for (int i = 0; i <= respuestas.size(); i++) {
+                                            List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                            cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                        }
+                                    } else {
+                                        if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                            for (int i = 0; i <= respuestas.size(); i++) {
+                                                List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1, "personaIdpersona.programaIdprograma", prog);
+                                                cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                            }
+                                        }
+                                    }
                                 }
 
                             } else {
-                                for (int i = 0; i < respuestas.size(); i++) {
-                                    List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
-                                    cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                if (!para2.equals("ajax")) {
+                                    for (int i = 0; i < respuestas.size(); i++) {
+                                        List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
+                                        cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                    }
+                                } else {
+                                    if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                        for (int i = 0; i < respuestas.size(); i++) {
+                                            List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                            cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                        }
+                                    } else {
+                                        if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                            for (int i = 0; i < respuestas.size(); i++) {
+                                                List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1, "personaIdpersona.programaIdprograma", prog);
+                                                cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                            }
+                                        }
+                                    }
                                 }
 
                             }
@@ -137,21 +220,59 @@ public class Encuestas extends HttpServlet {
                         }
                         if ("true".equals(pregunta.getOtro())) {
                             List<String> cantidadOrdenRespuestasActual22 = new ArrayList<String>();
-                            for (int i = 0; i <= respuestas.size(); i++) {
-                                List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial2("preguntaIdpregunta", pregunta, "orden", i + 1);
-                                cantidadOrdenRespuestasActual22.add("" + CantidadOrdenresultados2.size());
+                            if (!para2.equals("ajax")) {
+                                for (int i = 0; i <= respuestas.size(); i++) {
+                                    List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial2("preguntaIdpregunta", pregunta, "orden", i + 1);
+                                    cantidadOrdenRespuestasActual22.add("" + CantidadOrdenresultados2.size());
 
+                                }
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                    for (int i = 0; i <= respuestas.size(); i++) {
+                                        List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial3("preguntaIdpregunta", pregunta, "orden", i + 1, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                        cantidadOrdenRespuestasActual22.add("" + CantidadOrdenresultados2.size());
+                                    }
+                                } else {
+                                    if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                        for (int i = 0; i <= respuestas.size(); i++) {
+                                            List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial3("preguntaIdpregunta", pregunta, "orden", i + 1, "personaIdpersona.programaIdprograma", prog);
+                                            cantidadOrdenRespuestasActual22.add("" + CantidadOrdenresultados2.size());
+                                        }
+                                    }
+                                }
                             }
                             cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual22);
-                            //cantidadRespuestasPreguntaActual.add("" + resultados.size());
-                            //totalr += resultados.size();
-
-                            List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
-                            cantidadRespuestasPreguntaActual.add("" + resultados2.size());
-                            totalr += resultados2.size();
+                            if (!para2.equals("ajax")) {
+                                List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
+                                cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                                totalr += resultados2.size();
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                    List<Resultados> resultados2 = resultadosFacade.findByList2EspecialParametro1("preguntaIdpregunta", pregunta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                    cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                                    totalr += resultados2.size();
+                                } else {
+                                    if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                        List<Resultados> resultados2 = resultadosFacade.findByList2EspecialParametro1("preguntaIdpregunta", pregunta, "personaIdpersona.programaIdprograma", prog);
+                                        cantidadRespuestasPreguntaActual.add("" + resultados2.size());
+                                        totalr += resultados2.size();
+                                    }
+                                }
+                            }
                         }
                     } else if ("2".equals(pregunta.getTipo()) || "3".equals(pregunta.getTipo()) || "4".equals(pregunta.getTipo())) {
-                        List<Resultados> resultadoAbierta = resultadosFacade.findByList("preguntaIdpregunta", pregunta);
+                        List<Resultados> resultadoAbierta = new ArrayList<Resultados>();
+                        if (!para2.equals("ajax")) {
+                            resultadoAbierta = resultadosFacade.findByList("preguntaIdpregunta", pregunta);
+                        } else {
+                            if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                resultadoAbierta = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                    resultadoAbierta = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "personaIdpersona.programaIdprograma", prog);
+                                }
+                            }
+                        }
                         for (Resultados resultados : resultadoAbierta) {
                             resultadosAbiertaPreguntaActual.add(resultados.getValor());
                         }
@@ -161,43 +282,115 @@ public class Encuestas extends HttpServlet {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas6 = pregunta.getRespuestaList();
 
-                        for (Respuesta respuesta : respuestas6) {
-                            List<Resultados> resultados6 = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "valor", "Si");
-                            cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
-                            totalr += resultados6.size();
+                        if (!para2.equals("ajax")) {
+                            for (Respuesta respuesta : respuestas6) {
+                                List<Resultados> resultados6 = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "valor", "Si");
+                                cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
+                                totalr += resultados6.size();
 
+                            }
+                        } else {
+                            if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                for (Respuesta respuesta : respuestas6) {
+                                    List<Resultados> resultados6 = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "valor", "Si", "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                    cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
+                                    totalr += resultados6.size();
+
+                                }
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                    for (Respuesta respuesta : respuestas6) {
+                                        List<Resultados> resultados6 = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "valor", "Si", "personaIdpersona.programaIdprograma", prog);
+                                        cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
+                                        totalr += resultados6.size();
+
+                                    }
+                                }
+                            }
                         }
-                        /* if ("true".equals(pregunta.getOtro())) {
-                         List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
-                         cantidadRespuestasPreguntaActual6.add("" + resultados2.size());
-                         totalr += resultados2.size();
-                         }*/
+
                     } else if ("7".equals(pregunta.getTipo())) {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
 
-                        for (Respuesta respuesta : respuestas) {
-                            List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
-                            List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                        if (!para2.equals("ajax")) {
+                            for (Respuesta respuesta : respuestas) {
+                                List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
+                                List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
 
-                            for (int i = 0; i < respuestas.size(); i++) {
-                                List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
-                                cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                for (int i = 0; i < respuestas.size(); i++) {
+                                    List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
+                                    cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                }
+
+                                cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
+                                cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                totalr += resultados.size();
+
                             }
+                        } else {
+                            if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                for (Respuesta respuesta : respuestas) {
+                                    List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
+                                    List<Resultados> resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
 
-                            cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
-                            cantidadRespuestasPreguntaActual.add("" + resultados.size());
-                            totalr += resultados.size();
+                                    for (int i = 0; i < respuestas.size(); i++) {
+                                        List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                        cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                    }
 
+                                    cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
+                                    cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                    totalr += resultados.size();
+
+                                }
+
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                    for (Respuesta respuesta : respuestas) {
+                                        List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
+                                        List<Resultados> resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma", prog);
+
+                                        for (int i = 0; i < respuestas.size(); i++) {
+                                            List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList4("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1, "personaIdpersona.programaIdprograma", prog);
+                                            cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
+                                        }
+
+                                        cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual);
+                                        cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                        totalr += resultados.size();
+
+                                    }
+                                }
+                            }
                         }
 
                     } else if ("9".equals(pregunta.getTipo())) {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
-                        for (Respuesta respuesta : respuestas) {
-                            List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
-                            cantidadRespuestasPreguntaActual.add("" + resultados.size());
-                            totalr += resultados.size();
+
+                        if (!para2.equals("ajax")) {
+                            for (Respuesta respuesta : respuestas) {
+                                List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
+                                cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                totalr += resultados.size();
+                            }
+                        } else {
+                            if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
+                                for (Respuesta respuesta : respuestas) {
+                                    List<Resultados> resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma.facultadIdfacultad", fac);
+                                    cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                    totalr += resultados.size();
+                                }
+                            } else {
+                                if (para2.equals("ajax") && !facultad.equals("NA") && !programa.equals("NA")) {
+                                    for (Respuesta respuesta : respuestas) {
+                                        List<Resultados> resultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "personaIdpersona.programaIdprograma", prog);
+                                        cantidadRespuestasPreguntaActual.add("" + resultados.size());
+                                        totalr += resultados.size();
+                                    }
+                                }
+                            }
                         }
 
                     }
@@ -230,6 +423,10 @@ public class Encuestas extends HttpServlet {
                 String url = "informes/informexpregunta.jsp";
                 if (para2 != null && para2.equals("g")) {
                     url = "informes/informe.jsp";
+                } else {
+                    if (para2 != null && para2.equals("ajax")) {
+                        url = "informes/informeAjax.jsp";
+                    }
                 }
 
                 RequestDispatcher rd = request.getRequestDispatcher(url);
@@ -243,7 +440,7 @@ public class Encuestas extends HttpServlet {
                 List<List<String>> aux = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta");
                 List<List<String>> aux6 = (List<List<String>>) sesion.getAttribute("cantidadXrespuestaXPregunta6");
                 List<Pregunta> preg = (List<Pregunta>) sesion.getAttribute("preguntas");
-               
+
                 String aux4 = "{ \"datos\":[";
 
                 try {
@@ -258,8 +455,8 @@ public class Encuestas extends HttpServlet {
                                     + "},"
                                     + "";
                             aux4 += aux5;
-                        }else{
-                        String aux5 = ""
+                        } else {
+                            String aux5 = ""
                                     + "{"
                                     + "\"y\": \"" + preg.get(indicePregunta).getRespuestaList()
                                     .get(i).getRespuesta().trim()
