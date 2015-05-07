@@ -75,6 +75,7 @@ public class Encuestas extends HttpServlet {
             if (accion.equals("informeXpregunta")) {
                 String para = (String) request.getParameter("para");
                 String para2 = (String) request.getParameter("para2");
+                String para3 = (String) request.getParameter("para3");
                 String facultad = (String) request.getParameter("facultad");
                 Facultad fac = null;
                 if (facultad != null && !facultad.equals("NA")) {
@@ -112,7 +113,7 @@ public class Encuestas extends HttpServlet {
                         //Preguntas tipo 0  seleccion multiple unica respuesta
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
                         for (Respuesta respuesta : respuestas) {
-                            if (!para2.equals("ajax")) {
+                            if (para2 == null || !para2.equals("ajax")) {
                                 List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
                                 cantidadRespuestasPreguntaActual.add("" + resultados.size());
                                 totalr += resultados.size();
@@ -132,7 +133,7 @@ public class Encuestas extends HttpServlet {
 
                         }
                         if ("true".equals(pregunta.getOtro())) {
-                            if (!para2.equals("ajax")) {
+                            if (para2 == null || !para2.equals("ajax")) {
                                 List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
                                 cantidadRespuestasPreguntaActual.add("" + resultados2.size());
                                 totalr += resultados2.size();
@@ -156,7 +157,7 @@ public class Encuestas extends HttpServlet {
                         for (Respuesta respuesta : respuestas) {
                             List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
                             List<Resultados> resultados = null;
-                            if (!para2.equals("ajax")) {
+                            if (para2 == null || !para2.equals("ajax")) {
                                 resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
                             } else {
                                 if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
@@ -169,7 +170,7 @@ public class Encuestas extends HttpServlet {
                             }
 
                             if ("true".equals(pregunta.getOtro())) {
-                                if (!para2.equals("ajax")) {
+                                if (para2 == null || !para2.equals("ajax")) {
                                     for (int i = 0; i <= respuestas.size(); i++) {
                                         List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
                                         cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
@@ -191,7 +192,7 @@ public class Encuestas extends HttpServlet {
                                 }
 
                             } else {
-                                if (!para2.equals("ajax")) {
+                                if (para2 == null || !para2.equals("ajax")) {
                                     for (int i = 0; i < respuestas.size(); i++) {
                                         List<Resultados> CantidadOrdenresultados = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "orden", i + 1);
                                         cantidadOrdenRespuestasActual.add("" + CantidadOrdenresultados.size());
@@ -220,7 +221,7 @@ public class Encuestas extends HttpServlet {
                         }
                         if ("true".equals(pregunta.getOtro())) {
                             List<String> cantidadOrdenRespuestasActual22 = new ArrayList<String>();
-                            if (!para2.equals("ajax")) {
+                            if (para2 == null || !para2.equals("ajax")) {
                                 for (int i = 0; i <= respuestas.size(); i++) {
                                     List<Resultados> CantidadOrdenresultados2 = resultadosFacade.findByList2Especial2("preguntaIdpregunta", pregunta, "orden", i + 1);
                                     cantidadOrdenRespuestasActual22.add("" + CantidadOrdenresultados2.size());
@@ -242,7 +243,7 @@ public class Encuestas extends HttpServlet {
                                 }
                             }
                             cantidadOrdenRespuestasPreguntaActual.add(cantidadOrdenRespuestasActual22);
-                            if (!para2.equals("ajax")) {
+                            if (para2 == null || !para2.equals("ajax")) {
                                 List<Resultados> resultados2 = resultadosFacade.findByList2Especial("preguntaIdpregunta", pregunta);
                                 cantidadRespuestasPreguntaActual.add("" + resultados2.size());
                                 totalr += resultados2.size();
@@ -262,7 +263,7 @@ public class Encuestas extends HttpServlet {
                         }
                     } else if ("2".equals(pregunta.getTipo()) || "3".equals(pregunta.getTipo()) || "4".equals(pregunta.getTipo())) {
                         List<Resultados> resultadoAbierta = new ArrayList<Resultados>();
-                        if (!para2.equals("ajax")) {
+                        if (para2 == null || !para2.equals("ajax")) {
                             resultadoAbierta = resultadosFacade.findByList("preguntaIdpregunta", pregunta);
                         } else {
                             if (para2.equals("ajax") && !facultad.equals("NA") && programa.equals("NA")) {
@@ -282,7 +283,7 @@ public class Encuestas extends HttpServlet {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas6 = pregunta.getRespuestaList();
 
-                        if (!para2.equals("ajax")) {
+                        if (para2 == null || !para2.equals("ajax")) {
                             for (Respuesta respuesta : respuestas6) {
                                 List<Resultados> resultados6 = resultadosFacade.findByList3("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta, "valor", "Si");
                                 cantidadRespuestasPreguntaActual6.add("" + resultados6.size());
@@ -313,7 +314,7 @@ public class Encuestas extends HttpServlet {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
 
-                        if (!para2.equals("ajax")) {
+                        if (para2 == null || !para2.equals("ajax")) {
                             for (Respuesta respuesta : respuestas) {
                                 List<String> cantidadOrdenRespuestasActual = new ArrayList<String>();
                                 List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
@@ -369,7 +370,7 @@ public class Encuestas extends HttpServlet {
                         //Preguntas tipo 1  seleccion multiple multiple respuesta con ordenamiento
                         List<Respuesta> respuestas = pregunta.getRespuestaList();
 
-                        if (!para2.equals("ajax")) {
+                        if (para2 == null || !para2.equals("ajax")) {
                             for (Respuesta respuesta : respuestas) {
                                 List<Resultados> resultados = resultadosFacade.findByList2("preguntaIdpregunta", pregunta, "respuestaIdrespuesta", respuesta);
                                 cantidadRespuestasPreguntaActual.add("" + resultados.size());
@@ -427,6 +428,9 @@ public class Encuestas extends HttpServlet {
                     if (para2 != null && para2.equals("ajax")) {
                         url = "informes/informeAjax.jsp";
                     }
+                }
+                if (para3!=null &&  para3.equals("para3")) {
+                    url = "informes/informeAjax2.jsp";
                 }
 
                 RequestDispatcher rd = request.getRequestDispatcher(url);
