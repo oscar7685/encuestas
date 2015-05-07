@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.udec.entidades;
 
 import java.io.Serializable;
@@ -27,10 +26,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Ususario
+ * @author PLANEACION
  */
 @Entity
-@Table(name = "respuesta", catalog = "encuestas", schema = "")
+@Table(name = "respuesta", catalog = "encuestasi", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Respuesta.findAll", query = "SELECT r FROM Respuesta r"),
@@ -51,14 +50,14 @@ public class Respuesta implements Serializable {
     private Integer orden;
     @OneToMany(mappedBy = "respuestaIdrespuesta")
     private List<Resultados> resultadosList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "respuestaCondicionadora")
-    private List<Condicion> condicionList;
-    @JoinColumn(name = "pregunta_idpregunta", referencedColumnName = "idpregunta")
-    @ManyToOne(optional = false)
-    private Pregunta preguntaIdpregunta;
     @JoinColumn(name = "grupo_respuestas_idgrupo_respuestas", referencedColumnName = "idgrupo_respuestas")
     @ManyToOne
     private GrupoRespuestas grupoRespuestasIdgrupoRespuestas;
+    @JoinColumn(name = "pregunta_idpregunta", referencedColumnName = "idpregunta")
+    @ManyToOne(optional = false)
+    private Pregunta preguntaIdpregunta;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "respuestaCondicionadora")
+    private List<Condicion> condicionList;
 
     public Respuesta() {
     }
@@ -100,13 +99,12 @@ public class Respuesta implements Serializable {
         this.resultadosList = resultadosList;
     }
 
-    @XmlTransient
-    public List<Condicion> getCondicionList() {
-        return condicionList;
+    public GrupoRespuestas getGrupoRespuestasIdgrupoRespuestas() {
+        return grupoRespuestasIdgrupoRespuestas;
     }
 
-    public void setCondicionList(List<Condicion> condicionList) {
-        this.condicionList = condicionList;
+    public void setGrupoRespuestasIdgrupoRespuestas(GrupoRespuestas grupoRespuestasIdgrupoRespuestas) {
+        this.grupoRespuestasIdgrupoRespuestas = grupoRespuestasIdgrupoRespuestas;
     }
 
     public Pregunta getPreguntaIdpregunta() {
@@ -117,12 +115,13 @@ public class Respuesta implements Serializable {
         this.preguntaIdpregunta = preguntaIdpregunta;
     }
 
-    public GrupoRespuestas getGrupoRespuestasIdgrupoRespuestas() {
-        return grupoRespuestasIdgrupoRespuestas;
+    @XmlTransient
+    public List<Condicion> getCondicionList() {
+        return condicionList;
     }
 
-    public void setGrupoRespuestasIdgrupoRespuestas(GrupoRespuestas grupoRespuestasIdgrupoRespuestas) {
-        this.grupoRespuestasIdgrupoRespuestas = grupoRespuestasIdgrupoRespuestas;
+    public void setCondicionList(List<Condicion> condicionList) {
+        this.condicionList = condicionList;
     }
 
     @Override

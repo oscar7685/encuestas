@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.udec.entidades;
 
 import java.io.Serializable;
@@ -23,10 +22,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Ususario
+ * @author PLANEACION
  */
 @Entity
-@Table(name = "condicion", catalog = "encuestas", schema = "")
+@Table(name = "condicion", catalog = "encuestasi", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Condicion.findAll", query = "SELECT c FROM Condicion c"),
@@ -42,15 +41,15 @@ public class Condicion implements Serializable {
     @Size(max = 45)
     @Column(name = "tipo")
     private String tipo;
-    @JoinColumn(name = "respuestaCondicionadora", referencedColumnName = "idrespuesta")
-    @ManyToOne(optional = false)
-    private Respuesta respuestaCondicionadora;
-    @JoinColumn(name = "preguntaCondicionadora", referencedColumnName = "idpregunta")
-    @ManyToOne(optional = false)
-    private Pregunta preguntaCondicionadora;
     @JoinColumn(name = "preguntaCondicionada", referencedColumnName = "idpregunta")
     @ManyToOne(optional = false)
     private Pregunta preguntaCondicionada;
+    @JoinColumn(name = "preguntaCondicionadora", referencedColumnName = "idpregunta")
+    @ManyToOne(optional = false)
+    private Pregunta preguntaCondicionadora;
+    @JoinColumn(name = "respuestaCondicionadora", referencedColumnName = "idrespuesta")
+    @ManyToOne(optional = false)
+    private Respuesta respuestaCondicionadora;
 
     public Condicion() {
     }
@@ -75,12 +74,12 @@ public class Condicion implements Serializable {
         this.tipo = tipo;
     }
 
-    public Respuesta getRespuestaCondicionadora() {
-        return respuestaCondicionadora;
+    public Pregunta getPreguntaCondicionada() {
+        return preguntaCondicionada;
     }
 
-    public void setRespuestaCondicionadora(Respuesta respuestaCondicionadora) {
-        this.respuestaCondicionadora = respuestaCondicionadora;
+    public void setPreguntaCondicionada(Pregunta preguntaCondicionada) {
+        this.preguntaCondicionada = preguntaCondicionada;
     }
 
     public Pregunta getPreguntaCondicionadora() {
@@ -91,12 +90,12 @@ public class Condicion implements Serializable {
         this.preguntaCondicionadora = preguntaCondicionadora;
     }
 
-    public Pregunta getPreguntaCondicionada() {
-        return preguntaCondicionada;
+    public Respuesta getRespuestaCondicionadora() {
+        return respuestaCondicionadora;
     }
 
-    public void setPreguntaCondicionada(Pregunta preguntaCondicionada) {
-        this.preguntaCondicionada = preguntaCondicionada;
+    public void setRespuestaCondicionadora(Respuesta respuestaCondicionadora) {
+        this.respuestaCondicionadora = respuestaCondicionadora;
     }
 
     @Override

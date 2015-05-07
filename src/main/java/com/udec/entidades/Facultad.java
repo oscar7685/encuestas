@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.udec.entidades;
 
 import java.io.Serializable;
@@ -24,10 +23,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Ususario
+ * @author PLANEACION
  */
 @Entity
-@Table(name = "facultad", catalog = "encuestas", schema = "")
+@Table(name = "facultad", catalog = "encuestasi", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Facultad.findAll", query = "SELECT f FROM Facultad f"),

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.udec.entidades;
 
 import java.io.Serializable;
@@ -26,10 +25,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Ususario
+ * @author PLANEACION
  */
 @Entity
-@Table(name = "programa", catalog = "encuestas", schema = "")
+@Table(name = "programa", catalog = "encuestasi", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Programa.findAll", query = "SELECT p FROM Programa p"),
@@ -45,11 +44,11 @@ public class Programa implements Serializable {
     @Size(max = 100)
     @Column(name = "programa")
     private String programa;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programaIdprograma")
+    private List<Persona> personaList;
     @JoinColumn(name = "facultad_idfacultad", referencedColumnName = "idfacultad")
     @ManyToOne(optional = false)
     private Facultad facultadIdfacultad;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "programaIdprograma")
-    private List<Persona> personaList;
 
     public Programa() {
     }
@@ -74,14 +73,6 @@ public class Programa implements Serializable {
         this.programa = programa;
     }
 
-    public Facultad getFacultadIdfacultad() {
-        return facultadIdfacultad;
-    }
-
-    public void setFacultadIdfacultad(Facultad facultadIdfacultad) {
-        this.facultadIdfacultad = facultadIdfacultad;
-    }
-
     @XmlTransient
     public List<Persona> getPersonaList() {
         return personaList;
@@ -89,6 +80,14 @@ public class Programa implements Serializable {
 
     public void setPersonaList(List<Persona> personaList) {
         this.personaList = personaList;
+    }
+
+    public Facultad getFacultadIdfacultad() {
+        return facultadIdfacultad;
+    }
+
+    public void setFacultadIdfacultad(Facultad facultadIdfacultad) {
+        this.facultadIdfacultad = facultadIdfacultad;
     }
 
     @Override

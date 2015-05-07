@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.udec.entidades;
 
 import java.io.Serializable;
@@ -23,10 +22,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Ususario
+ * @author PLANEACION
  */
 @Entity
-@Table(name = "resultados", catalog = "encuestas", schema = "")
+@Table(name = "resultados", catalog = "encuestasi", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Resultados.findAll", query = "SELECT r FROM Resultados r"),
@@ -45,15 +44,15 @@ public class Resultados implements Serializable {
     private String valor;
     @Column(name = "orden")
     private Integer orden;
-    @JoinColumn(name = "respuesta_idrespuesta", referencedColumnName = "idrespuesta")
-    @ManyToOne
-    private Respuesta respuestaIdrespuesta;
-    @JoinColumn(name = "pregunta_idpregunta", referencedColumnName = "idpregunta")
-    @ManyToOne(optional = false)
-    private Pregunta preguntaIdpregunta;
     @JoinColumn(name = "persona_idpersona", referencedColumnName = "idpersona")
     @ManyToOne(optional = false)
     private Persona personaIdpersona;
+    @JoinColumn(name = "pregunta_idpregunta", referencedColumnName = "idpregunta")
+    @ManyToOne(optional = false)
+    private Pregunta preguntaIdpregunta;
+    @JoinColumn(name = "respuesta_idrespuesta", referencedColumnName = "idrespuesta")
+    @ManyToOne
+    private Respuesta respuestaIdrespuesta;
 
     public Resultados() {
     }
@@ -86,12 +85,12 @@ public class Resultados implements Serializable {
         this.orden = orden;
     }
 
-    public Respuesta getRespuestaIdrespuesta() {
-        return respuestaIdrespuesta;
+    public Persona getPersonaIdpersona() {
+        return personaIdpersona;
     }
 
-    public void setRespuestaIdrespuesta(Respuesta respuestaIdrespuesta) {
-        this.respuestaIdrespuesta = respuestaIdrespuesta;
+    public void setPersonaIdpersona(Persona personaIdpersona) {
+        this.personaIdpersona = personaIdpersona;
     }
 
     public Pregunta getPreguntaIdpregunta() {
@@ -102,12 +101,12 @@ public class Resultados implements Serializable {
         this.preguntaIdpregunta = preguntaIdpregunta;
     }
 
-    public Persona getPersonaIdpersona() {
-        return personaIdpersona;
+    public Respuesta getRespuestaIdrespuesta() {
+        return respuestaIdrespuesta;
     }
 
-    public void setPersonaIdpersona(Persona personaIdpersona) {
-        this.personaIdpersona = personaIdpersona;
+    public void setRespuestaIdrespuesta(Respuesta respuestaIdrespuesta) {
+        this.respuestaIdrespuesta = respuestaIdrespuesta;
     }
 
     @Override

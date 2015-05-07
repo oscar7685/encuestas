@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.udec.entidades;
 
 import java.io.Serializable;
@@ -27,10 +26,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author Ususario
+ * @author PLANEACION
  */
 @Entity
-@Table(name = "pregunta", catalog = "encuestas", schema = "")
+@Table(name = "pregunta", catalog = "encuestasi", schema = "")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Pregunta.findAll", query = "SELECT p FROM Pregunta p"),
@@ -63,20 +62,20 @@ public class Pregunta implements Serializable {
     private Integer orden;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaIdpregunta")
     private List<Resultados> resultadosList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaIdpregunta")
+    private List<Respuesta> respuestaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaCondicionada")
+    private List<Condicion> condicionList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaCondicionadora")
+    private List<Condicion> condicionList1;
+    @JoinColumn(name = "encuesta_idencuesta", referencedColumnName = "idencuesta")
+    @ManyToOne(optional = false)
+    private Encuesta encuestaIdencuesta;
     @OneToMany(mappedBy = "preguntaPadre")
     private List<Pregunta> preguntaList;
     @JoinColumn(name = "pregunta_padre", referencedColumnName = "idpregunta")
     @ManyToOne
     private Pregunta preguntaPadre;
-    @JoinColumn(name = "encuesta_idencuesta", referencedColumnName = "idencuesta")
-    @ManyToOne(optional = false)
-    private Encuesta encuestaIdencuesta;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaCondicionadora")
-    private List<Condicion> condicionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaCondicionada")
-    private List<Condicion> condicionList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "preguntaIdpregunta")
-    private List<Respuesta> respuestaList;
 
     public Pregunta() {
     }
@@ -143,28 +142,12 @@ public class Pregunta implements Serializable {
     }
 
     @XmlTransient
-    public List<Pregunta> getPreguntaList() {
-        return preguntaList;
+    public List<Respuesta> getRespuestaList() {
+        return respuestaList;
     }
 
-    public void setPreguntaList(List<Pregunta> preguntaList) {
-        this.preguntaList = preguntaList;
-    }
-
-    public Pregunta getPreguntaPadre() {
-        return preguntaPadre;
-    }
-
-    public void setPreguntaPadre(Pregunta preguntaPadre) {
-        this.preguntaPadre = preguntaPadre;
-    }
-
-    public Encuesta getEncuestaIdencuesta() {
-        return encuestaIdencuesta;
-    }
-
-    public void setEncuestaIdencuesta(Encuesta encuestaIdencuesta) {
-        this.encuestaIdencuesta = encuestaIdencuesta;
+    public void setRespuestaList(List<Respuesta> respuestaList) {
+        this.respuestaList = respuestaList;
     }
 
     @XmlTransient
@@ -185,13 +168,29 @@ public class Pregunta implements Serializable {
         this.condicionList1 = condicionList1;
     }
 
-    @XmlTransient
-    public List<Respuesta> getRespuestaList() {
-        return respuestaList;
+    public Encuesta getEncuestaIdencuesta() {
+        return encuestaIdencuesta;
     }
 
-    public void setRespuestaList(List<Respuesta> respuestaList) {
-        this.respuestaList = respuestaList;
+    public void setEncuestaIdencuesta(Encuesta encuestaIdencuesta) {
+        this.encuestaIdencuesta = encuestaIdencuesta;
+    }
+
+    @XmlTransient
+    public List<Pregunta> getPreguntaList() {
+        return preguntaList;
+    }
+
+    public void setPreguntaList(List<Pregunta> preguntaList) {
+        this.preguntaList = preguntaList;
+    }
+
+    public Pregunta getPreguntaPadre() {
+        return preguntaPadre;
+    }
+
+    public void setPreguntaPadre(Pregunta preguntaPadre) {
+        this.preguntaPadre = preguntaPadre;
     }
 
     @Override
